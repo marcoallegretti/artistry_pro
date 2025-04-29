@@ -4,19 +4,19 @@
 ![Flutter](https://img.shields.io/badge/Flutter-3.0+-blue.svg)
 ![License](https://img.shields.io/badge/License-MIT-green.svg)
 
-Artistry Pro is a professional-grade digital art and design application built with Flutter. It provides a powerful and intuitive interface for digital artists, designers, and creative professionals.
+Artistry Pro is a digital art and design application built with Flutter. It provides a powerful and intuitive interface for digital artists, designers, and creative professionals.
 
 ## Features
 
 - **Advanced Layer Management**: Create, edit, and organize multiple layers for complex compositions
 - **Professional Brush Engine**: Customizable brushes with pressure sensitivity and various settings
-- **Color Management**: Comprehensive color picker with palette management
-- **Selection Tools**: Precise selection tools for detailed editing
-- **Transform Capabilities**: Rotate, scale, and transform your artwork with precision
-- **Filter Effects**: Apply and customize various filters to enhance your artwork
-- **Animation Support**: Create frame-by-frame animations
-- **History Management**: Comprehensive undo/redo functionality
-- **Export Options**: Export your work in various formats
+- **Color Management**: Comprehensive color picker with palette management (TODO)
+- **Selection Tools**: Precise selection tools for detailed editing (TODO)
+- **Transform Capabilities**: Rotate, scale, and transform your artwork with precision (TODO)
+- **Filter Effects**: Apply and customize various filters to enhance your artwork (TODO)
+- **Animation Support**: Create frame-by-frame animations (TODO)
+- **History Management**: Comprehensive undo/redo functionality (TODO)
+- **Export Options**: Export your work in various formats (TODO)
 - **Cross-Platform**: Available on Windows, macOS, iOS, Android, and web
 
 ## Installation
@@ -87,11 +87,6 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 
-## Acknowledgments
-
-- Flutter team for the amazing framework
-- All contributors who have helped shape Artistry Pro
-- The open-source community for inspiration and resources
 
 ## Contact
 
