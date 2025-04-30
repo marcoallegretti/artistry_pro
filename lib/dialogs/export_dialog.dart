@@ -6,10 +6,10 @@ class ExportDialog extends StatefulWidget {
   final bool isAnimation;
 
   const ExportDialog({
-    Key? key,
+    super.key,
     required this.onExport,
     this.isAnimation = false,
-  }) : super(key: key);
+  });
 
   @override
   _ExportDialogState createState() => _ExportDialogState();
@@ -62,9 +62,9 @@ class _ExportDialogState extends State<ExportDialog> {
                   return null;
                 },
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               Text('Format:', style: Theme.of(context).textTheme.titleSmall),
-              SizedBox(height: 8),
+              const SizedBox(height: 8),
               SegmentedButton<String>(
                 segments: formats.map((format) {
                   return ButtonSegment<String>(
@@ -79,7 +79,7 @@ class _ExportDialogState extends State<ExportDialog> {
                   });
                 },
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               if (_format == 'jpg')
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -89,7 +89,7 @@ class _ExportDialogState extends State<ExportDialog> {
                       children: [
                         Text('JPEG Quality:',
                             style: Theme.of(context).textTheme.bodyMedium),
-                        Text('${_jpegQuality}%'),
+                        Text('$_jpegQuality%'),
                       ],
                     ),
                     Slider(
@@ -109,10 +109,10 @@ class _ExportDialogState extends State<ExportDialog> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
                     Text('Frame Rate:',
                         style: Theme.of(context).textTheme.titleSmall),
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
                     TextFormField(
                       initialValue: _frameRate.toString(),
                       decoration: InputDecoration(
@@ -147,7 +147,7 @@ class _ExportDialogState extends State<ExportDialog> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SizedBox(height: 16),
+                    const SizedBox(height: 16),
                     Row(
                       children: [
                         Checkbox(
@@ -160,7 +160,7 @@ class _ExportDialogState extends State<ExportDialog> {
                             }
                           },
                         ),
-                        Text('Include transparency'),
+                        const Text('Include transparency'),
                       ],
                     ),
                   ],
@@ -174,7 +174,7 @@ class _ExportDialogState extends State<ExportDialog> {
           onPressed: () {
             Navigator.of(context).pop();
           },
-          child: Text('Cancel'),
+          child: const Text('Cancel'),
         ),
         ElevatedButton(
           onPressed: () {
@@ -198,7 +198,7 @@ class _ExportDialogState extends State<ExportDialog> {
               Navigator.of(context).pop();
             }
           },
-          child: Text('Export'),
+          child: const Text('Export'),
         ),
       ],
     );

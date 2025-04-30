@@ -5,7 +5,7 @@ import '../models/painting_models.dart';
 
 /// Manages the canvas state and operations
 class CanvasEngine {
-  final Uuid _uuid = Uuid();
+  static final Uuid _uuid = Uuid(); // Fixed declaration
   late CanvasDocument document;
   late List<Layer> _layers;
   int _currentLayerIndex = 0;

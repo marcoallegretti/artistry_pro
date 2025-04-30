@@ -8,20 +8,20 @@ class CMYKColor {
   final double magenta;
   final double yellow;
   final double black;
-  
+
   CMYKColor({
     required this.cyan,
     required this.magenta,
     required this.yellow,
     required this.black,
   });
-  
+
   /// Convert to RGB color
   Color toRGBColor() {
     final r = 255 * (1 - cyan) * (1 - black);
     final g = 255 * (1 - magenta) * (1 - black);
     final b = 255 * (1 - yellow) * (1 - black);
-    
+
     return Color.fromARGB(
       255,
       r.round().clamp(0, 255),
@@ -29,18 +29,18 @@ class CMYKColor {
       b.round().clamp(0, 255),
     );
   }
-  
+
   /// Create a CMYK color from RGB color
   factory CMYKColor.fromRGBColor(Color color) {
     final r = color.red / 255.0;
     final g = color.green / 255.0;
     final b = color.blue / 255.0;
-    
+
     final k = 1.0 - max(r, max(g, b));
     final c = k == 1.0 ? 0.0 : (1.0 - r - k) / (1.0 - k);
     final m = k == 1.0 ? 0.0 : (1.0 - g - k) / (1.0 - k);
     final y = k == 1.0 ? 0.0 : (1.0 - b - k) / (1.0 - k);
-    
+
     return CMYKColor(
       cyan: c,
       magenta: m,
@@ -55,7 +55,7 @@ class ColorService {
   ColorMode _currentMode = ColorMode.RGB;
   Color _currentColor = Colors.black;
   CMYKColor _currentCMYK = CMYKColor(cyan: 0, magenta: 0, yellow: 0, black: 1);
-  List<Color> _recentColors = [
+  final List<Color> _recentColors = [
     Colors.black,
     Colors.white,
     Colors.red,
@@ -65,11 +65,11 @@ class ColorService {
     Colors.purple,
     Colors.orange,
   ];
-  List<AppColorSwatch> _savedSwatches = [];
-  
+  final List<AppColorSwatch> _savedSwatches = [];
+
   /// Get current color mode
   ColorMode get currentMode => _currentMode;
-  
+
   /// Set color mode
   set currentMode(ColorMode mode) {
     _currentMode = mode;
@@ -78,30 +78,30 @@ class ColorService {
       _currentCMYK = CMYKColor.fromRGBColor(_currentColor);
     }
   }
-  
+
   /// Get current color
   Color get currentColor => _currentColor;
-  
+
   /// Set current color in RGB mode
   set currentColor(Color color) {
     _currentColor = color;
     _addToRecentColors(color);
-    
+
     if (_currentMode == ColorMode.CMYK) {
       _currentCMYK = CMYKColor.fromRGBColor(color);
     }
   }
-  
+
   /// Get current CMYK color
   CMYKColor get currentCMYK => _currentCMYK;
-  
+
   /// Set current color in CMYK mode
   set currentCMYK(CMYKColor cmyk) {
     _currentCMYK = cmyk;
     _currentColor = cmyk.toRGBColor();
     _addToRecentColors(_currentColor);
   }
-  
+
   /// Update one component of CMYK color
   void updateCMYKComponent(String component, double value) {
     switch (component) {
@@ -138,31 +138,31 @@ class ColorService {
         );
         break;
     }
-    
+
     _currentColor = _currentCMYK.toRGBColor();
     _addToRecentColors(_currentColor);
   }
-  
+
   /// Get recent colors
   List<Color> get recentColors => _recentColors;
-  
+
   /// Get saved color swatches
   List<AppColorSwatch> get savedSwatches => _savedSwatches;
-  
+
   /// Add a color to recent colors
   void _addToRecentColors(Color color) {
     // Remove if already exists
     _recentColors.remove(color);
-    
+
     // Add to the beginning of the list
     _recentColors.insert(0, color);
-    
+
     // Limit to 20 recent colors
     if (_recentColors.length > 20) {
       _recentColors.removeLast();
     }
   }
-  
+
   /// Create and save a new color swatch
   AppColorSwatch createSwatch(String name, List<Color> colors) {
     final swatch = AppColorSwatch(
@@ -170,16 +170,16 @@ class ColorService {
       name: name,
       colors: List.from(colors),
     );
-    
+
     _savedSwatches.add(swatch);
     return swatch;
   }
-  
+
   /// Delete a color swatch
   void deleteSwatch(String id) {
     _savedSwatches.removeWhere((swatch) => swatch.id == id);
   }
-  
+
   /// Generate a complementary color
   Color getComplementaryColor(Color color) {
     final hsv = HSVColor.fromColor(color);
@@ -190,24 +190,25 @@ class ColorService {
       hsv.value,
     ).toColor();
   }
-  
+
   /// Generate analogous colors
-  List<Color> getAnalogousColors(Color color, {int count = 2, double angle = 30}) {
+  List<Color> getAnalogousColors(Color color,
+      {int count = 2, double angle = 30}) {
     final hsv = HSVColor.fromColor(color);
     final List<Color> colors = [];
-    
+
     for (int i = 1; i <= count; i++) {
       // Add colors at -angle and +angle
       final hue1 = (hsv.hue - (angle * i)) % 360;
       final hue2 = (hsv.hue + (angle * i)) % 360;
-      
+
       colors.add(HSVColor.fromAHSV(
         hsv.alpha,
         hue1,
         hsv.saturation,
         hsv.value,
       ).toColor());
-      
+
       colors.add(HSVColor.fromAHSV(
         hsv.alpha,
         hue2,
@@ -215,14 +216,14 @@ class ColorService {
         hsv.value,
       ).toColor());
     }
-    
+
     return colors;
   }
-  
+
   /// Generate triadic colors
   List<Color> getTriadicColors(Color color) {
     final hsv = HSVColor.fromColor(color);
-    
+
     return [
       HSVColor.fromAHSV(
         hsv.alpha,
@@ -238,7 +239,7 @@ class ColorService {
       ).toColor(),
     ];
   }
-  
+
   /// Generate a color scheme from a base color
   List<Color> generateColorScheme(Color baseColor, String schemeType) {
     switch (schemeType) {
@@ -256,17 +257,17 @@ class ColorService {
         return _generateMonochromaticScheme(baseColor);
     }
   }
-  
+
   /// Generate a monochromatic color scheme
   List<Color> _generateMonochromaticScheme(Color color) {
     final hsv = HSVColor.fromColor(color);
     final List<Color> colors = [];
-    
+
     for (int i = 1; i <= 4; i++) {
       // Vary value and saturation
       final double valueFactor = 0.3 + (i * 0.15);
       final double saturationFactor = 0.3 + (i * 0.15);
-      
+
       colors.add(HSVColor.fromAHSV(
         hsv.alpha,
         hsv.hue,
@@ -274,19 +275,19 @@ class ColorService {
         (hsv.value * valueFactor).clamp(0, 1),
       ).toColor());
     }
-    
+
     return colors;
   }
-  
+
   /// Generate a complementary color scheme
   List<Color> _generateComplementaryScheme(Color color) {
     final complementary = getComplementaryColor(color);
     final List<Color> colors = [color, complementary];
-    
+
     // Add variations of both colors
     final hsvBase = HSVColor.fromColor(color);
     final hsvComp = HSVColor.fromColor(complementary);
-    
+
     // Lighter version of base color
     colors.add(HSVColor.fromAHSV(
       hsvBase.alpha,
@@ -294,7 +295,7 @@ class ColorService {
       (hsvBase.saturation * 0.7).clamp(0, 1),
       (hsvBase.value * 1.2).clamp(0, 1),
     ).toColor());
-    
+
     // Lighter version of complementary color
     colors.add(HSVColor.fromAHSV(
       hsvComp.alpha,
@@ -302,14 +303,14 @@ class ColorService {
       (hsvComp.saturation * 0.7).clamp(0, 1),
       (hsvComp.value * 1.2).clamp(0, 1),
     ).toColor());
-    
+
     return colors;
   }
-  
+
   /// Generate a tetradic color scheme
   List<Color> _generateTetradicScheme(Color color) {
     final hsv = HSVColor.fromColor(color);
-    
+
     return [
       color,
       HSVColor.fromAHSV(
@@ -332,7 +333,7 @@ class ColorService {
       ).toColor(),
     ];
   }
-  
+
   /// Convert hex string to color
   Color hexToColor(String hexString) {
     final buffer = StringBuffer();
@@ -340,7 +341,7 @@ class ColorService {
     buffer.write(hexString.replaceFirst('#', ''));
     return Color(int.parse(buffer.toString(), radix: 16));
   }
-  
+
   /// Convert color to hex string
   String colorToHex(Color color) {
     return '#${color.value.toRadixString(16).substring(2).padLeft(6, '0')}';

@@ -10,12 +10,12 @@ class BrushSettingsPanel extends StatefulWidget {
   final VoidCallback onClose;
 
   const BrushSettingsPanel({
-    Key? key,
+    super.key,
     required this.brushEngine,
     required this.onBrushTypeChanged,
     required this.onSettingsChanged,
     required this.onClose,
-  }) : super(key: key);
+  });
 
   @override
   _BrushSettingsPanelState createState() => _BrushSettingsPanelState();
@@ -53,7 +53,7 @@ class _BrushSettingsPanelState extends State<BrushSettingsPanel> {
           children: [
             // Header with close button
             Container(
-              padding: EdgeInsets.fromLTRB(16, 12, 8, 8),
+              padding: const EdgeInsets.fromLTRB(16, 12, 8, 8),
               decoration: BoxDecoration(
                 border: Border(
                   bottom: BorderSide(
@@ -70,7 +70,7 @@ class _BrushSettingsPanelState extends State<BrushSettingsPanel> {
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                   IconButton(
-                    icon: Icon(Icons.close),
+                    icon: const Icon(Icons.close),
                     onPressed: widget.onClose,
                     tooltip: 'Close',
                     color: Theme.of(context).colorScheme.onSurface,
@@ -87,15 +87,15 @@ class _BrushSettingsPanelState extends State<BrushSettingsPanel> {
                 children: [
                   Text('Brush Type',
                       style: Theme.of(context).textTheme.titleSmall),
-                  SizedBox(height: 8),
+                  const SizedBox(height: 8),
                   _buildBrushTypeSelector(),
-                  SizedBox(height: 16),
+                  const SizedBox(height: 16),
 
                   // Brush size
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('Size'),
+                      const Text('Size'),
                       Text('${_settings.size.toInt()}'),
                     ],
                   ),
@@ -112,13 +112,13 @@ class _BrushSettingsPanelState extends State<BrushSettingsPanel> {
                     },
                     activeColor: Theme.of(context).colorScheme.primary,
                   ),
-                  SizedBox(height: 8),
+                  const SizedBox(height: 8),
 
                   // Opacity
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('Opacity'),
+                      const Text('Opacity'),
                       Text('${(_settings.opacity * 100).toInt()}%'),
                     ],
                   ),
@@ -135,13 +135,13 @@ class _BrushSettingsPanelState extends State<BrushSettingsPanel> {
                     },
                     activeColor: Theme.of(context).colorScheme.primary,
                   ),
-                  SizedBox(height: 8),
+                  const SizedBox(height: 8),
 
                   // Flow
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('Flow'),
+                      const Text('Flow'),
                       Text('${(_settings.flow * 100).toInt()}%'),
                     ],
                   ),
@@ -158,13 +158,13 @@ class _BrushSettingsPanelState extends State<BrushSettingsPanel> {
                     },
                     activeColor: Theme.of(context).colorScheme.primary,
                   ),
-                  SizedBox(height: 8),
+                  const SizedBox(height: 8),
 
                   // Hardness
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('Hardness'),
+                      const Text('Hardness'),
                       Text('${(_settings.hardness * 100).toInt()}%'),
                     ],
                   ),
@@ -181,7 +181,7 @@ class _BrushSettingsPanelState extends State<BrushSettingsPanel> {
                     },
                     activeColor: Theme.of(context).colorScheme.primary,
                   ),
-                  SizedBox(height: 16),
+                  const SizedBox(height: 16),
 
                   // Pressure sensitivity
                   Row(
@@ -199,7 +199,7 @@ class _BrushSettingsPanelState extends State<BrushSettingsPanel> {
                         },
                         activeColor: Theme.of(context).colorScheme.primary,
                       ),
-                      Text('Pressure Sensitivity'),
+                      const Text('Pressure Sensitivity'),
                     ],
                   ),
                 ],
@@ -278,7 +278,7 @@ class _BrushSettingsPanelState extends State<BrushSettingsPanel> {
                   widget.onBrushTypeChanged(type);
                 },
                 child: AnimatedContainer(
-                  duration: Duration(milliseconds: 200),
+                  duration: const Duration(milliseconds: 200),
                   width: 64,
                   height: 64,
                   decoration: BoxDecoration(
@@ -302,7 +302,7 @@ class _BrushSettingsPanelState extends State<BrushSettingsPanel> {
                             ? Theme.of(context).colorScheme.primary
                             : Theme.of(context).colorScheme.onSurface,
                       ),
-                      SizedBox(height: 4),
+                      const SizedBox(height: 4),
                       Text(
                         brushNames[type] ?? 'Brush',
                         style: TextStyle(
@@ -329,15 +329,15 @@ class _BrushSettingsPanelState extends State<BrushSettingsPanel> {
               children: [
                 Text('Texture Options',
                     style: Theme.of(context).textTheme.titleSmall),
-                SizedBox(height: 8),
+                const SizedBox(height: 8),
                 Row(
                   children: [
                     ElevatedButton.icon(
                       onPressed: () {
                         // Would open texture selector dialog
                       },
-                      icon: Icon(Icons.photo_library, size: 16),
-                      label: Text('Select Texture'),
+                      icon: const Icon(Icons.photo_library, size: 16),
+                      label: const Text('Select Texture'),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Theme.of(context).colorScheme.primary,
                         foregroundColor:
@@ -357,11 +357,11 @@ class _BrushSettingsPanelState extends State<BrushSettingsPanel> {
               children: [
                 Text('Watercolor Options',
                     style: Theme.of(context).textTheme.titleSmall),
-                SizedBox(height: 8),
+                const SizedBox(height: 8),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text('Wetness'),
+                    const Text('Wetness'),
                     Text('${(_settings.flow * 100).toInt()}%'),
                   ],
                 ),
@@ -378,11 +378,11 @@ class _BrushSettingsPanelState extends State<BrushSettingsPanel> {
                   },
                   activeColor: Theme.of(context).colorScheme.primary,
                 ),
-                SizedBox(height: 8),
+                const SizedBox(height: 8),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text('Diffusion'),
+                    const Text('Diffusion'),
                     Text('${((_settings.hardness * -1 + 1) * 100).toInt()}%'),
                   ],
                 ),

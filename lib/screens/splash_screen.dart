@@ -6,7 +6,7 @@ import '../theme.dart';
 import 'recent_documents_screen.dart';
 
 class SplashScreen extends StatefulWidget {
-  const SplashScreen({Key? key}) : super(key: key);
+  const SplashScreen({super.key});
 
   @override
   _SplashScreenState createState() => _SplashScreenState();
@@ -30,15 +30,15 @@ class _SplashScreenState extends State<SplashScreen>
       end: 1.0,
     ).animate(CurvedAnimation(
       parent: _animationController,
-      curve: Interval(0.0, 0.5, curve: Curves.easeIn),
+      curve: const Interval(0.0, 0.5, curve: Curves.easeIn),
     ));
 
     _animationController.forward();
 
     // Navigate to recent documents screen after a delay
-    Future.delayed(Duration(seconds: 2), () {
+    Future.delayed(const Duration(seconds: 2), () {
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => RecentDocumentsScreen()),
+        MaterialPageRoute(builder: (context) => const RecentDocumentsScreen()),
       );
     });
   }
@@ -79,7 +79,7 @@ class _SplashScreenState extends State<SplashScreen>
                     : AppTheme.lightColorScheme.primary,
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             AnimatedBuilder(
               animation: _animationController,
               builder: (context, child) {
@@ -99,7 +99,7 @@ class _SplashScreenState extends State<SplashScreen>
                 ),
               ),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             AnimatedBuilder(
               animation: _animationController,
               builder: (context, child) {
@@ -118,7 +118,7 @@ class _SplashScreenState extends State<SplashScreen>
                 ),
               ),
             ),
-            SizedBox(height: 50),
+            const SizedBox(height: 50),
             CircularProgressIndicator(
               valueColor: AlwaysStoppedAnimation<Color>(
                 brightness == Brightness.dark

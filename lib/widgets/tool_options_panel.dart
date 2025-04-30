@@ -17,7 +17,7 @@ class ToolOptionsPanel extends StatelessWidget {
   final Function(double) onFeatherRadiusChanged;
 
   const ToolOptionsPanel({
-    Key? key,
+    super.key,
     required this.currentTool,
     required this.brushEngine,
     this.selectionService,
@@ -27,7 +27,7 @@ class ToolOptionsPanel extends StatelessWidget {
     required this.onSelectionToleranceChanged,
     required this.onFeatherSelectionChanged,
     required this.onFeatherRadiusChanged,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -355,7 +355,7 @@ class ToolOptionsPanel extends StatelessWidget {
             ButtonSegment(value: 3, label: Text('3×3')),
             ButtonSegment(value: 5, label: Text('5×5')),
           ],
-          selected: {1},
+          selected: const {1},
           onSelectionChanged: (Set<int> newSelection) {
             // Here you would handle the sample size change
           },
@@ -367,7 +367,7 @@ class ToolOptionsPanel extends StatelessWidget {
             ButtonSegment(value: 'current', label: Text('Current Layer')),
             ButtonSegment(value: 'all', label: Text('All Layers')),
           ],
-          selected: {'current'},
+          selected: const {'current'},
           onSelectionChanged: (Set<String> newSelection) {
             // Here you would handle the sample source change
           },
@@ -398,7 +398,7 @@ class ToolOptionsPanel extends StatelessWidget {
             ButtonSegment(value: 'color', label: Text('Color')),
             ButtonSegment(value: 'pattern', label: Text('Pattern')),
           ],
-          selected: {'color'},
+          selected: const {'color'},
           onSelectionChanged: (Set<String> newSelection) {
             // Here you would handle fill mode changes
           },
@@ -498,7 +498,7 @@ class ToolOptionsPanel extends StatelessWidget {
               icon: Icon(Icons.format_align_justify),
             ),
           ],
-          selected: {TextAlign.left},
+          selected: const {TextAlign.left},
           onSelectionChanged: (Set<TextAlign> newSelection) {
             // Here you would handle alignment changes
           },
@@ -602,7 +602,7 @@ class ToolOptionsPanel extends StatelessWidget {
             ButtonSegment(value: '4:3', label: Text('4:3')),
             ButtonSegment(value: '16:9', label: Text('16:9')),
           ],
-          selected: {'free'},
+          selected: const {'free'},
           onSelectionChanged: (Set<String> newSelection) {
             // Here you would handle aspect ratio changes
           },

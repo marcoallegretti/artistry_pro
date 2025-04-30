@@ -7,14 +7,14 @@ class FilterEffectsPanel extends StatefulWidget {
   final double intensity;
   final Function(FilterType, double) onApplyFilter;
   final VoidCallback onResetFilters;
-  
+
   const FilterEffectsPanel({
-    Key? key,
+    super.key,
     this.currentFilter,
     this.intensity = 1.0,
     required this.onApplyFilter,
     required this.onResetFilters,
-  }) : super(key: key);
+  });
 
   @override
   State<FilterEffectsPanel> createState() => _FilterEffectsPanelState();
@@ -23,14 +23,14 @@ class FilterEffectsPanel extends StatefulWidget {
 class _FilterEffectsPanelState extends State<FilterEffectsPanel> {
   late FilterType _selectedFilter;
   late double _intensity;
-  
+
   @override
   void initState() {
     super.initState();
     _selectedFilter = widget.currentFilter ?? FilterType.NONE;
     _intensity = widget.intensity;
   }
-  
+
   @override
   void didUpdateWidget(FilterEffectsPanel oldWidget) {
     super.didUpdateWidget(oldWidget);
@@ -41,7 +41,7 @@ class _FilterEffectsPanelState extends State<FilterEffectsPanel> {
       _intensity = widget.intensity;
     }
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -55,7 +55,7 @@ class _FilterEffectsPanelState extends State<FilterEffectsPanel> {
             style: Theme.of(context).textTheme.titleMedium,
           ),
           const Divider(),
-          
+
           // Filter categories
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
@@ -69,9 +69,9 @@ class _FilterEffectsPanelState extends State<FilterEffectsPanel> {
               ],
             ),
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // Filter grid
           Expanded(
             child: GridView.count(
@@ -81,9 +81,9 @@ class _FilterEffectsPanelState extends State<FilterEffectsPanel> {
               children: _buildFilterGrid(),
             ),
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // Filter intensity slider
           if (_selectedFilter != FilterType.NONE) ...[
             Text(
@@ -103,9 +103,9 @@ class _FilterEffectsPanelState extends State<FilterEffectsPanel> {
               },
             ),
           ],
-          
+
           const SizedBox(height: 16),
-          
+
           // Apply and Reset buttons
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
@@ -127,12 +127,13 @@ class _FilterEffectsPanelState extends State<FilterEffectsPanel> {
       ),
     );
   }
-  
-  Widget _buildFilterCategoryButton(BuildContext context, String label, IconData icon) {
+
+  Widget _buildFilterCategoryButton(
+      BuildContext context, String label, IconData icon) {
     // In a real implementation, this would depend on which category is active
     // For now, we'll just set it to true for the first button
     final isSelected = label == 'Adjust';
-    
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 4.0),
       child: ChoiceChip(
@@ -156,11 +157,11 @@ class _FilterEffectsPanelState extends State<FilterEffectsPanel> {
       ),
     );
   }
-  
+
   List<Widget> _buildFilterGrid() {
     // This would show different filters based on the selected category
     // For now, we'll show a sample of common filters
-    
+
     final filterTypes = [
       FilterType.NONE,
       FilterType.GRAYSCALE,
@@ -183,16 +184,17 @@ class _FilterEffectsPanelState extends State<FilterEffectsPanel> {
       FilterType.VINTAGE,
       FilterType.DUOTONE,
     ];
-    
+
     return filterTypes.map((filter) {
       return _buildFilterTile(filter);
     }).toList();
   }
-  
+
   Widget _buildFilterTile(FilterType filter) {
     final isSelected = _selectedFilter == filter;
-    final String filterName = filter.toString().split('.').last.replaceAll('_', ' ');
-    
+    final String filterName =
+        filter.toString().split('.').last.replaceAll('_', ' ');
+
     // In a real implementation, these would be actual thumbnail previews
     // of the filter applied to the current image
     Widget previewWidget;
@@ -206,23 +208,57 @@ class _FilterEffectsPanelState extends State<FilterEffectsPanel> {
       case FilterType.GRAYSCALE:
         previewWidget = ColorFiltered(
           colorFilter: const ColorFilter.matrix([
-            0.2126, 0.7152, 0.0722, 0, 0,
-            0.2126, 0.7152, 0.0722, 0, 0,
-            0.2126, 0.7152, 0.0722, 0, 0,
-            0, 0, 0, 1, 0,
+            0.2126,
+            0.7152,
+            0.0722,
+            0,
+            0,
+            0.2126,
+            0.7152,
+            0.0722,
+            0,
+            0,
+            0.2126,
+            0.7152,
+            0.0722,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
           ]),
-          child: Image.asset('assets/images/filter_preview.jpg', fit: BoxFit.cover),
+          child: Image.asset('assets/images/filter_preview.jpg',
+              fit: BoxFit.cover),
         );
         break;
       case FilterType.SEPIA:
         previewWidget = ColorFiltered(
           colorFilter: const ColorFilter.matrix([
-            0.393, 0.769, 0.189, 0, 0,
-            0.349, 0.686, 0.168, 0, 0,
-            0.272, 0.534, 0.131, 0, 0,
-            0, 0, 0, 1, 0,
+            0.393,
+            0.769,
+            0.189,
+            0,
+            0,
+            0.349,
+            0.686,
+            0.168,
+            0,
+            0,
+            0.272,
+            0.534,
+            0.131,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
           ]),
-          child: Image.asset('assets/images/filter_preview.jpg', fit: BoxFit.cover),
+          child: Image.asset('assets/images/filter_preview.jpg',
+              fit: BoxFit.cover),
         );
         break;
       default:
@@ -243,7 +279,7 @@ class _FilterEffectsPanelState extends State<FilterEffectsPanel> {
           ),
         );
     }
-    
+
     return GestureDetector(
       onTap: () {
         setState(() {
@@ -253,7 +289,9 @@ class _FilterEffectsPanelState extends State<FilterEffectsPanel> {
       child: Container(
         decoration: BoxDecoration(
           border: Border.all(
-            color: isSelected ? Theme.of(context).colorScheme.primary : Colors.transparent,
+            color: isSelected
+                ? Theme.of(context).colorScheme.primary
+                : Colors.transparent,
             width: 2,
           ),
           borderRadius: BorderRadius.circular(8),
@@ -291,7 +329,7 @@ class _FilterEffectsPanelState extends State<FilterEffectsPanel> {
       ),
     );
   }
-  
+
   Color _getFilterPreviewColor(FilterType filter) {
     // Placeholder colors for filter previews
     switch (filter) {

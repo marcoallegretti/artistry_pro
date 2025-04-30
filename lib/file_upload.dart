@@ -6,7 +6,7 @@ import 'package:file_selector/file_selector.dart';
 
 /// Helper class for handling file uploads
 class FileUploadHelper {
-  static final _uuid = Uuid();
+  static const _uuid = Uuid();
 
   /// Upload a file and return its path
   /// Returns null if the operation was cancelled or failed
@@ -14,7 +14,9 @@ class FileUploadHelper {
     try {
       // Pick a single file using file_selector
       final XFile? pickedFile = await openFile(
-        acceptedTypeGroups: [XTypeGroup(label: 'files', extensions: ['*'])],
+        acceptedTypeGroups: [
+          const XTypeGroup(label: 'files', extensions: ['*'])
+        ],
       );
 
       if (pickedFile != null) {

@@ -6,9 +6,9 @@ class NewDocumentDialog extends StatefulWidget {
   final Function(String, Size, double, ColorMode) onCreateDocument;
 
   const NewDocumentDialog({
-    Key? key,
+    super.key,
     required this.onCreateDocument,
-  }) : super(key: key);
+  });
 
   @override
   _NewDocumentDialogState createState() => _NewDocumentDialogState();
@@ -34,7 +34,7 @@ class _NewDocumentDialogState extends State<NewDocumentDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text('New Document'),
+      title: const Text('New Document'),
       content: Form(
         key: _formKey,
         child: SingleChildScrollView(
@@ -56,7 +56,7 @@ class _NewDocumentDialogState extends State<NewDocumentDialog> {
                   return null;
                 },
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               Row(
                 children: [
                   Expanded(
@@ -82,7 +82,7 @@ class _NewDocumentDialogState extends State<NewDocumentDialog> {
                       },
                     ),
                   ),
-                  SizedBox(width: 16),
+                  const SizedBox(width: 16),
                   Expanded(
                     child: TextFormField(
                       controller: _heightController,
@@ -108,7 +108,7 @@ class _NewDocumentDialogState extends State<NewDocumentDialog> {
                   ),
                 ],
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               TextFormField(
                 controller: _resolutionController,
                 decoration: InputDecoration(
@@ -132,7 +132,7 @@ class _NewDocumentDialogState extends State<NewDocumentDialog> {
                   return null;
                 },
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               DropdownButtonFormField<ColorMode>(
                 value: _colorMode,
                 decoration: InputDecoration(
@@ -140,7 +140,7 @@ class _NewDocumentDialogState extends State<NewDocumentDialog> {
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8)),
                 ),
-                items: [
+                items: const [
                   DropdownMenuItem(value: ColorMode.RGB, child: Text('RGB')),
                   DropdownMenuItem(value: ColorMode.CMYK, child: Text('CMYK')),
                 ],
@@ -152,7 +152,7 @@ class _NewDocumentDialogState extends State<NewDocumentDialog> {
                   }
                 },
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               _buildPresetButtons(),
             ],
           ),
@@ -163,7 +163,7 @@ class _NewDocumentDialogState extends State<NewDocumentDialog> {
           onPressed: () {
             Navigator.of(context).pop();
           },
-          child: Text('Cancel'),
+          child: const Text('Cancel'),
         ),
         ElevatedButton(
           onPressed: () {
@@ -178,7 +178,7 @@ class _NewDocumentDialogState extends State<NewDocumentDialog> {
               Navigator.of(context).pop();
             }
           },
-          child: Text('Create'),
+          child: const Text('Create'),
         ),
       ],
     );
@@ -189,7 +189,7 @@ class _NewDocumentDialogState extends State<NewDocumentDialog> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text('Presets:', style: Theme.of(context).textTheme.titleSmall),
-        SizedBox(height: 8),
+        const SizedBox(height: 8),
         Wrap(
           spacing: 8,
           runSpacing: 8,
@@ -215,11 +215,11 @@ class _NewDocumentDialogState extends State<NewDocumentDialog> {
         });
       },
       style: ElevatedButton.styleFrom(
-        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         backgroundColor: Theme.of(context).colorScheme.primaryContainer,
         foregroundColor: Theme.of(context).colorScheme.onPrimaryContainer,
       ),
-      child: Text(label, style: TextStyle(fontSize: 12)),
+      child: Text(label, style: const TextStyle(fontSize: 12)),
     );
   }
 }

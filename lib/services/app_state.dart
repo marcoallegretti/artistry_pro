@@ -25,7 +25,7 @@ enum ToolType {
 
 /// Manages the state of the entire app
 class AppState extends ChangeNotifier {
-  final Uuid _uuid = Uuid();
+  static final Uuid _uuid = Uuid(); // Fixed declaration
   final FileService _fileService = FileService();
 
   // Core services
@@ -43,7 +43,7 @@ class AppState extends ChangeNotifier {
   Offset _canvasOffset = Offset.zero;
   bool _isUiCollapsed = false;
   List<String> _recentFiles = [];
-  int _currentLayerIndex = 0; // Non-nullable, default to 0
+  final int _currentLayerIndex = 0; // Non-nullable, default to 0
 
   /// Initialize the app state
   AppState() {
@@ -55,7 +55,7 @@ class AppState extends ChangeNotifier {
   void _initializeNewDocument() {
     final newEngine = CanvasEngine.newDocument(
       name: 'Untitled',
-      size: Size(1920, 1080),
+      size: const Size(1920, 1080),
       resolution: 300.0,
       colorMode: ColorMode.RGB,
     );
@@ -403,7 +403,8 @@ class AppState extends ChangeNotifier {
     if (_currentDocument == null || _currentDocument!.layers.isEmpty) {
       return null;
     }
-    if (_currentLayerIndex < 0 || _currentLayerIndex >= _currentDocument!.layers.length) {
+    if (_currentLayerIndex < 0 ||
+        _currentLayerIndex >= _currentDocument!.layers.length) {
       return null; // Or handle out-of-bounds, e.g., clamp index
     }
     return _currentDocument!.layers[_currentLayerIndex];

@@ -8,11 +8,11 @@ class ToolBar extends StatelessWidget {
   final VoidCallback onToggleColorPicker;
 
   const ToolBar({
-    Key? key,
+    super.key,
     required this.currentTool,
     required this.onToolChanged,
     required this.onToggleColorPicker,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -106,7 +106,7 @@ class ToolBar extends StatelessWidget {
             accentColor: accentColor,
           ),
 
-          Divider(height: 16, thickness: 1),
+          const Divider(height: 16, thickness: 1),
 
           // Color swatch button
           IconButton(
@@ -116,7 +116,7 @@ class ToolBar extends StatelessWidget {
             tooltip: 'Color Picker',
           ),
 
-          Spacer(),
+          const Spacer(),
 
           // Settings button at bottom
           IconButton(
@@ -125,7 +125,7 @@ class ToolBar extends StatelessWidget {
                 color: Theme.of(context).colorScheme.onSurface),
             tooltip: 'Settings',
           ),
-          SizedBox(height: 8),
+          const SizedBox(height: 8),
         ],
       ),
     );
@@ -140,7 +140,7 @@ class ToolBar extends StatelessWidget {
     required Color accentColor,
   }) {
     return Container(
-      margin: EdgeInsets.symmetric(vertical: 4),
+      margin: const EdgeInsets.symmetric(vertical: 4),
       decoration: isSelected
           ? BoxDecoration(
               color: accentColor.withOpacity(0.2),

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class CanvasSizeDialog extends StatefulWidget {
   final Size? initialSize;
 
-  const CanvasSizeDialog({Key? key, this.initialSize}) : super(key: key);
+  const CanvasSizeDialog({super.key, this.initialSize});
 
   @override
   _CanvasSizeDialogState createState() => _CanvasSizeDialogState();
@@ -34,17 +34,17 @@ class _CanvasSizeDialogState extends State<CanvasSizeDialog> {
     // Default to 1080×1080 canvas if no initial size provided
     _width = widget.initialSize?.width ?? 1080;
     _height = widget.initialSize?.height ?? 1080;
-    
+
     // Check if the initial size matches any preset
     for (var entry in _presets.entries) {
-      if (entry.key != 'custom' && 
-          entry.value.width == _width && 
+      if (entry.key != 'custom' &&
+          entry.value.width == _width &&
           entry.value.height == _height) {
         _preset = entry.key;
         break;
       }
     }
-    
+
     if (widget.initialSize != null) {
       _aspectRatio = widget.initialSize!.width / widget.initialSize!.height;
     }
@@ -52,7 +52,7 @@ class _CanvasSizeDialogState extends State<CanvasSizeDialog> {
 
   void _applyPreset(String presetName) {
     if (presetName == 'custom') return;
-    
+
     final preset = _presets[presetName]!;
     setState(() {
       _width = preset.width;
@@ -65,7 +65,7 @@ class _CanvasSizeDialogState extends State<CanvasSizeDialog> {
     if (value.isEmpty) return;
     final newWidth = double.tryParse(value);
     if (newWidth == null) return;
-    
+
     setState(() {
       _width = newWidth;
       if (_maintainAspectRatio && _aspectRatio != null) {
@@ -80,7 +80,7 @@ class _CanvasSizeDialogState extends State<CanvasSizeDialog> {
     if (value.isEmpty) return;
     final newHeight = double.tryParse(value);
     if (newHeight == null) return;
-    
+
     setState(() {
       _height = newHeight;
       if (_maintainAspectRatio && _aspectRatio != null) {
@@ -126,7 +126,7 @@ class _CanvasSizeDialogState extends State<CanvasSizeDialog> {
                 },
               ),
               const SizedBox(height: 16),
-              
+
               // Width and height inputs
               Row(
                 children: [
@@ -180,7 +180,7 @@ class _CanvasSizeDialogState extends State<CanvasSizeDialog> {
                 ],
               ),
               const SizedBox(height: 16),
-              
+
               // Maintain aspect ratio checkbox
               Row(
                 children: [
@@ -198,7 +198,7 @@ class _CanvasSizeDialogState extends State<CanvasSizeDialog> {
                   const Text('Maintain aspect ratio'),
                 ],
               ),
-              
+
               // Canvas preview
               const SizedBox(height: 16),
               const Text('Preview:'),
@@ -246,7 +246,7 @@ class _CanvasSizeDialogState extends State<CanvasSizeDialog> {
           onPressed: () {
             if (_formKey.currentState!.validate()) {
               Navigator.pop(
-                context, 
+                context,
                 Size(_width, _height),
               );
             }

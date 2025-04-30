@@ -13,7 +13,7 @@ import '../widgets/background_panel.dart';
 import '../widgets/canvas_size_dialog.dart';
 
 class ProCanvasScreen extends StatefulWidget {
-  const ProCanvasScreen({Key? key}) : super(key: key);
+  const ProCanvasScreen({super.key});
 
   @override
   _ProCanvasScreenState createState() => _ProCanvasScreenState();
@@ -32,19 +32,19 @@ class _ProCanvasScreenState extends State<ProCanvasScreen> {
   // Eraser settings
   double _eraserTolerance =
       10.0; // Tolerance for smart eraser (distance threshold)
-      
+
   // Image manipulation settings
   bool _isImageSelected = false;
   int? _selectedImageLayerIndex;
   Offset? _imageInitialPosition;
   Offset? _dragStartPosition;
-  
+
   // Canvas background tap detection
   bool _canDeselectOnTap = true;
 
   // Brush types
   BrushType _brushType = BrushType.pen;
-  
+
   // Tool modes
   ToolMode _toolMode = ToolMode.draw;
 
@@ -70,20 +70,20 @@ class _ProCanvasScreenState extends State<ProCanvasScreen> {
     super.initState();
     _layerManager = LayerManager(baseLayerName: 'Background');
     _canvasSettings = CanvasSettings.defaultSettings;
-    
+
     // Show canvas size dialog after the widget is built
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _showCanvasSizeDialog();
     });
   }
-  
+
   // Show background settings dialog
   Future<void> _showBackgroundSettingsDialog() async {
     Color selectedColor = _canvasSettings.backgroundColor;
     bool isTransparent = _canvasSettings.isTransparent;
     double checkerPatternOpacity = _canvasSettings.checkerPatternOpacity;
     double checkerSquareSize = _canvasSettings.checkerSquareSize;
-    
+
     await showDialog<void>(
       context: context,
       builder: (context) => StatefulBuilder(
@@ -105,11 +105,11 @@ class _ProCanvasScreenState extends State<ProCanvasScreen> {
                       });
                     },
                   ),
-                  
+
                   const Divider(),
-                  
+
                   // Background color picker (only visible when not transparent)
-                  if (!isTransparent) ...[                    
+                  if (!isTransparent) ...[
                     const Text('Background Color:'),
                     const SizedBox(height: 8),
                     Container(
@@ -136,9 +136,9 @@ class _ProCanvasScreenState extends State<ProCanvasScreen> {
                       child: const Text('Choose Color'),
                     ),
                   ],
-                  
+
                   // Checker pattern settings (only visible when transparent)
-                  if (isTransparent) ...[                    
+                  if (isTransparent) ...[
                     const Text('Checker Pattern Opacity:'),
                     Slider(
                       value: checkerPatternOpacity,
@@ -152,7 +152,6 @@ class _ProCanvasScreenState extends State<ProCanvasScreen> {
                         });
                       },
                     ),
-                    
                     const Text('Checker Square Size:'),
                     Slider(
                       value: checkerSquareSize,
@@ -199,14 +198,14 @@ class _ProCanvasScreenState extends State<ProCanvasScreen> {
       ),
     );
   }
-  
+
   // Helper method to show color picker
   Future<Color?> showColorPicker({
     required BuildContext context,
     required Color initialColor,
   }) async {
     Color selectedColor = initialColor;
-    
+
     return showDialog<Color>(
       context: context,
       builder: (BuildContext context) {
@@ -243,7 +242,7 @@ class _ProCanvasScreenState extends State<ProCanvasScreen> {
       },
     );
   }
-  
+
   Future<void> _showCanvasSizeDialog() async {
     final Size? newSize = await showDialog<Size>(
       context: context,
@@ -252,7 +251,7 @@ class _ProCanvasScreenState extends State<ProCanvasScreen> {
         initialSize: _canvasSettings.size,
       ),
     );
-    
+
     if (newSize != null) {
       setState(() {
         _canvasSettings = _canvasSettings.copyWith(size: newSize);
@@ -266,11 +265,13 @@ class _ProCanvasScreenState extends State<ProCanvasScreen> {
   @override
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
-    final toolbarWidth = mediaQuery.size.width > 600 ? 80.0 : 70.0; // Responsive width
-    
+    final toolbarWidth =
+        mediaQuery.size.width > 600 ? 80.0 : 70.0; // Responsive width
+
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(56.0), // Increased height for better touch targets
+        preferredSize: const Size.fromHeight(
+            56.0), // Increased height for better touch targets
         child: AppBar(
           title: const Text('Artistry Pro'),
           actions: [
@@ -339,7 +340,8 @@ class _ProCanvasScreenState extends State<ProCanvasScreen> {
                           canvasSize: _canvasSettings.size,
                           backgroundColor: _backgroundColor,
                           isTransparent: _canvasSettings.isTransparent,
-                          checkerPatternOpacity: _canvasSettings.checkerPatternOpacity,
+                          checkerPatternOpacity:
+                              _canvasSettings.checkerPatternOpacity,
                           checkerSquareSize: _canvasSettings.checkerSquareSize,
                         ),
                         size: Size.infinite,
@@ -381,29 +383,34 @@ class _ProCanvasScreenState extends State<ProCanvasScreen> {
                                 _buildToolButton(
                                   icon: Icons.create,
                                   isSelected: _brushType == BrushType.pencil,
-                                  onPressed: () => _setBrushType(BrushType.pencil),
+                                  onPressed: () =>
+                                      _setBrushType(BrushType.pencil),
                                   tooltip: 'Pencil',
                                 ),
                                 _buildToolButton(
                                   icon: Icons.blur_on,
                                   isSelected: _brushType == BrushType.airbrush,
-                                  onPressed: () => _setBrushType(BrushType.airbrush),
+                                  onPressed: () =>
+                                      _setBrushType(BrushType.airbrush),
                                   tooltip: 'Airbrush',
                                 ),
                                 _buildToolButton(
                                   icon: Icons.format_paint,
                                   isSelected: _brushType == BrushType.marker,
-                                  onPressed: () => _setBrushType(BrushType.marker),
+                                  onPressed: () =>
+                                      _setBrushType(BrushType.marker),
                                   tooltip: 'Marker',
                                 ),
                                 _buildToolButton(
                                   icon: Icons.cleaning_services,
-                                  isSelected: _brushType == BrushType.smartEraser,
-                                  onPressed: () => _setBrushType(BrushType.smartEraser),
+                                  isSelected:
+                                      _brushType == BrushType.smartEraser,
+                                  onPressed: () =>
+                                      _setBrushType(BrushType.smartEraser),
                                   tooltip: 'Eraser',
                                 ),
                                 const Divider(height: 8),
-                                
+
                                 // Panel toggles
                                 _buildToolButton(
                                   icon: Icons.color_lens,
@@ -424,7 +431,7 @@ class _ProCanvasScreenState extends State<ProCanvasScreen> {
                                   tooltip: 'Layers',
                                 ),
                                 const Divider(height: 8),
-                                
+
                                 // Image tools
                                 _buildToolButton(
                                   icon: Icons.image,
@@ -435,26 +442,30 @@ class _ProCanvasScreenState extends State<ProCanvasScreen> {
                                 _buildToolButton(
                                   icon: Icons.touch_app,
                                   isSelected: _toolMode == ToolMode.selectImage,
-                                  onPressed: () => _setToolMode(ToolMode.selectImage),
+                                  onPressed: () =>
+                                      _setToolMode(ToolMode.selectImage),
                                   tooltip: 'Select/Deselect Image',
                                 ),
                                 _buildToolButton(
                                   icon: Icons.open_with,
                                   isSelected: _toolMode == ToolMode.moveImage,
-                                  onPressed: () => _setToolMode(ToolMode.moveImage),
+                                  onPressed: () =>
+                                      _setToolMode(ToolMode.moveImage),
                                   tooltip: 'Move Image',
                                 ),
                                 _buildToolButton(
                                   icon: Icons.cancel,
                                   isSelected: false,
-                                  onPressed: _isImageSelected ? () => _deselectCurrentImage() : () {},
+                                  onPressed: _isImageSelected
+                                      ? () => _deselectCurrentImage()
+                                      : () {},
                                   tooltip: 'Deselect Image',
                                 ),
                               ],
                             ),
                           ),
                         ),
-                        
+
                         // Zoom controls at the bottom
                         Column(
                           mainAxisSize: MainAxisSize.min,
@@ -500,46 +511,46 @@ class _ProCanvasScreenState extends State<ProCanvasScreen> {
                       Theme.of(context).colorScheme.surface.blue,
                       0.9,
                     ),
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Color',
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
-                    const SizedBox(height: 16),
-                    _buildColorPalette(),
-                    const SizedBox(height: 24),
-                    Text(
-                      'Recent Colors',
-                      style: Theme.of(context).textTheme.titleSmall,
-                    ),
-                    const SizedBox(height: 8),
-                    _buildRecentColors(),
-                    const Spacer(),
-                    Container(
-                      height: 50,
-                      decoration: BoxDecoration(
-                        color: Color.fromRGBO(
-                          _selectedColor.red,
-                          _selectedColor.green,
-                          _selectedColor.blue,
-                          _selectedColor.alpha / 255.0,
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Color',
+                          style: Theme.of(context).textTheme.titleMedium,
                         ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.2),
-                            blurRadius: 4,
-                            offset: const Offset(0, 2),
+                        const SizedBox(height: 16),
+                        _buildColorPalette(),
+                        const SizedBox(height: 24),
+                        Text(
+                          'Recent Colors',
+                          style: Theme.of(context).textTheme.titleSmall,
+                        ),
+                        const SizedBox(height: 8),
+                        _buildRecentColors(),
+                        const Spacer(),
+                        Container(
+                          height: 50,
+                          decoration: BoxDecoration(
+                            color: Color.fromRGBO(
+                              _selectedColor.red,
+                              _selectedColor.green,
+                              _selectedColor.blue,
+                              _selectedColor.alpha / 255.0,
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.2),
+                                blurRadius: 4,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
-              ),
-            ),
 
               // Brush settings panel
               if (_showBrushSettings)
@@ -555,196 +566,196 @@ class _ProCanvasScreenState extends State<ProCanvasScreen> {
                       Theme.of(context).colorScheme.surface.blue,
                       0.8,
                     ),
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Brush Settings',
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
-                    const SizedBox(height: 24),
-                    ExpansionTile(
-                      title: Text(_brushType == BrushType.smartEraser
-                          ? 'Eraser Size'
-                          : 'Brush Size'),
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        Text(
+                          'Brush Settings',
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                        const SizedBox(height: 24),
+                        ExpansionTile(
+                          title: Text(_brushType == BrushType.smartEraser
+                              ? 'Eraser Size'
+                              : 'Brush Size'),
+                          children: [
+                            Slider(
+                              value: _strokeWidth,
+                              min: 1,
+                              max: 50,
+                              divisions: 49,
+                              label: _strokeWidth.round().toString(),
+                              onChanged: (value) {
+                                setState(() {
+                                  _strokeWidth = value;
+                                });
+                              },
+                            ),
+                            if (_brushType == BrushType.smartEraser) ...[
+                              const SizedBox(height: 16),
+                              Text(
+                                  'Eraser Tolerance: ${_eraserTolerance.toStringAsFixed(1)}'),
+                              Slider(
+                                value: _eraserTolerance,
+                                min: 1,
+                                max: 20,
+                                divisions: 19,
+                                label: _eraserTolerance.toStringAsFixed(1),
+                                onChanged: (value) {
+                                  setState(() {
+                                    _eraserTolerance = value;
+                                  });
+                                },
+                              ),
+                            ],
+                          ],
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                            'Opacity: ${(_brushOpacity * 100).toStringAsFixed(0)}%'),
                         Slider(
-                          value: _strokeWidth,
-                          min: 1,
-                          max: 50,
-                          divisions: 49,
-                          label: _strokeWidth.round().toString(),
+                          value: _brushOpacity,
+                          min: 0.1,
+                          max: 1.0,
+                          divisions: 9,
+                          label: '${(_brushOpacity * 100).round()}%',
                           onChanged: (value) {
                             setState(() {
-                              _strokeWidth = value;
+                              _brushOpacity = value;
                             });
                           },
                         ),
-                        if (_brushType == BrushType.smartEraser) ...[
-                          const SizedBox(height: 16),
-                          Text(
-                              'Eraser Tolerance: ${_eraserTolerance.toStringAsFixed(1)}'),
-                          Slider(
-                            value: _eraserTolerance,
-                            min: 1,
-                            max: 20,
-                            divisions: 19,
-                            label: _eraserTolerance.toStringAsFixed(1),
-                            onChanged: (value) {
+                        const SizedBox(height: 16),
+                        const Text('Brush Shape'),
+                        const SizedBox(height: 8),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            _buildStrokeCapButton(StrokeCap.round, 'Round'),
+                            _buildStrokeCapButton(StrokeCap.square, 'Square'),
+                            _buildStrokeCapButton(StrokeCap.butt, 'Flat'),
+                          ],
+                        ),
+                        const SizedBox(height: 24),
+                        const Text('Blend Mode'),
+                        const SizedBox(height: 8),
+                        DropdownButton<BlendMode>(
+                          value: _blendMode,
+                          isExpanded: true,
+                          onChanged: (BlendMode? newValue) {
+                            if (newValue != null) {
                               setState(() {
-                                _eraserTolerance = value;
+                                _blendMode = newValue;
                               });
-                            },
+                            }
+                          },
+                          items: [
+                            BlendMode.srcOver,
+                            BlendMode.multiply,
+                            BlendMode.screen,
+                            BlendMode.overlay,
+                            BlendMode.darken,
+                            BlendMode.lighten,
+                          ].map<DropdownMenuItem<BlendMode>>((BlendMode value) {
+                            return DropdownMenuItem<BlendMode>(
+                              value: value,
+                              child: Text(value.toString().split('.').last),
+                            );
+                          }).toList(),
+                        ),
+                        const Spacer(),
+                        // Brush preview
+                        Center(
+                          child: Container(
+                            width: 100,
+                            height: 100,
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.2),
+                                  blurRadius: 4,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            child: CustomPaint(
+                              painter: BrushPreviewPainter(
+                                color: _selectedColor,
+                                strokeWidth: _strokeWidth,
+                                strokeCap: _strokeCap,
+                                opacity: _brushOpacity,
+                              ),
+                            ),
                           ),
-                        ],
+                        ),
                       ],
                     ),
-                    const SizedBox(height: 16),
-                    Text(
-                        'Opacity: ${(_brushOpacity * 100).toStringAsFixed(0)}%'),
-                    Slider(
-                      value: _brushOpacity,
-                      min: 0.1,
-                      max: 1.0,
-                      divisions: 9,
-                      label: (_brushOpacity * 100).round().toString() + '%',
-                      onChanged: (value) {
-                        setState(() {
-                          _brushOpacity = value;
-                        });
-                      },
+                  ),
+                ),
+
+              // Layers panel
+              if (_showLayersPanel)
+                Positioned(
+                  left: toolbarWidth,
+                  top: 56.0,
+                  bottom: 0,
+                  child: Container(
+                    width: 250,
+                    decoration: BoxDecoration(
+                      color: Color.fromRGBO(
+                        Theme.of(context).colorScheme.surface.red,
+                        Theme.of(context).colorScheme.surface.green,
+                        Theme.of(context).colorScheme.surface.blue,
+                        0.8,
+                      ),
+                      border: Border(
+                        left: BorderSide(
+                          color: Theme.of(context).dividerColor,
+                          width: 1,
+                        ),
+                      ),
                     ),
-                    const SizedBox(height: 16),
-                    Text('Brush Shape'),
-                    const SizedBox(height: 8),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        _buildStrokeCapButton(StrokeCap.round, 'Round'),
-                        _buildStrokeCapButton(StrokeCap.square, 'Square'),
-                        _buildStrokeCapButton(StrokeCap.butt, 'Flat'),
-                      ],
-                    ),
-                    const SizedBox(height: 24),
-                    Text('Blend Mode'),
-                    const SizedBox(height: 8),
-                    DropdownButton<BlendMode>(
-                      value: _blendMode,
-                      isExpanded: true,
-                      onChanged: (BlendMode? newValue) {
-                        if (newValue != null) {
-                          setState(() {
-                            _blendMode = newValue;
-                          });
-                        }
-                      },
-                      items: [
-                        BlendMode.srcOver,
-                        BlendMode.multiply,
-                        BlendMode.screen,
-                        BlendMode.overlay,
-                        BlendMode.darken,
-                        BlendMode.lighten,
-                      ].map<DropdownMenuItem<BlendMode>>((BlendMode value) {
-                        return DropdownMenuItem<BlendMode>(
-                          value: value,
-                          child: Text(value.toString().split('.').last),
-                        );
-                      }).toList(),
-                    ),
-                    const Spacer(),
-                    // Brush preview
-                    Center(
-                      child: Container(
-                        width: 100,
-                        height: 100,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.2),
-                              blurRadius: 4,
-                              offset: const Offset(0, 2),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'Layers',
+                              style: Theme.of(context).textTheme.titleMedium,
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.add),
+                              tooltip: 'Add Layer',
+                              onPressed: _addLayer,
                             ),
                           ],
                         ),
-                        child: CustomPaint(
-                          painter: BrushPreviewPainter(
-                            color: _selectedColor,
-                            strokeWidth: _strokeWidth,
-                            strokeCap: _strokeCap,
-                            opacity: _brushOpacity,
+                        const Divider(),
+                        BackgroundPanel(
+                          backgroundColor: _backgroundColor,
+                          onBackgroundColorChanged: (color) =>
+                              setState(() => _backgroundColor = color),
+                        ),
+                        const SizedBox(height: 16),
+                        Expanded(
+                          child: ListView.builder(
+                            itemCount: _layerManager.layers.length,
+                            itemBuilder: (context, index) {
+                              final reversedIndex =
+                                  _layerManager.layers.length - 1 - index;
+                              return _buildLayerTile(reversedIndex);
+                            },
                           ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-
-          // Layers panel
-          if (_showLayersPanel)
-            Positioned(
-              left: toolbarWidth,
-              top: 56.0,
-              bottom: 0,
-              child: Container(
-                width: 250,
-                decoration: BoxDecoration(
-                  color: Color.fromRGBO(
-                    Theme.of(context).colorScheme.surface.red,
-                    Theme.of(context).colorScheme.surface.green,
-                    Theme.of(context).colorScheme.surface.blue,
-                    0.8,
-                  ),
-                  border: Border(
-                    left: BorderSide(
-                      color: Theme.of(context).dividerColor,
-                      width: 1,
-                    ),
-                  ),
-                ),
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Layers',
-                          style: Theme.of(context).textTheme.titleMedium,
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.add),
-                          tooltip: 'Add Layer',
-                          onPressed: _addLayer,
                         ),
                       ],
                     ),
-                    const Divider(),
-                    BackgroundPanel(
-                      backgroundColor: _backgroundColor,
-                      onBackgroundColorChanged: (color) =>
-                          setState(() => _backgroundColor = color),
-                    ),
-                    const SizedBox(height: 16),
-                    Expanded(
-                      child: ListView.builder(
-                        itemCount: _layerManager.layers.length,
-                        itemBuilder: (context, index) {
-                          final reversedIndex =
-                              _layerManager.layers.length - 1 - index;
-                          return _buildLayerTile(reversedIndex);
-                        },
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
-              ),
-            ),
             ],
           );
         },
@@ -781,7 +792,10 @@ class _ProCanvasScreenState extends State<ProCanvasScreen> {
                 ),
               ),
               color: isSelected
-                  ? Theme.of(context).colorScheme.primaryContainer.withOpacity(0.5)
+                  ? Theme.of(context)
+                      .colorScheme
+                      .primaryContainer
+                      .withOpacity(0.5)
                   : Colors.transparent,
             ),
             child: Center(
@@ -961,7 +975,8 @@ class _ProCanvasScreenState extends State<ProCanvasScreen> {
   void _setBrushType(BrushType type) {
     setState(() {
       _brushType = type;
-      _toolMode = ToolMode.draw; // Switch to drawing mode when selecting a brush
+      _toolMode =
+          ToolMode.draw; // Switch to drawing mode when selecting a brush
 
       // Adjust settings based on brush type
       switch (type) {
@@ -998,39 +1013,46 @@ class _ProCanvasScreenState extends State<ProCanvasScreen> {
       }
     });
   }
-  
+
   // Set the current tool mode
   void _setToolMode(ToolMode mode) {
     setState(() {
       // If we're already in this mode and it's an image mode, deselect the current image
-      if (_toolMode == mode && (mode == ToolMode.selectImage || mode == ToolMode.moveImage) && _isImageSelected) {
+      if (_toolMode == mode &&
+          (mode == ToolMode.selectImage || mode == ToolMode.moveImage) &&
+          _isImageSelected) {
         _deselectCurrentImage();
         return;
       }
-      
+
       _toolMode = mode;
-      
+
       // If switching away from image selection/movement, deselect any selected image
-      if (mode == ToolMode.draw && _isImageSelected && _selectedImageLayerIndex != null) {
+      if (mode == ToolMode.draw &&
+          _isImageSelected &&
+          _selectedImageLayerIndex != null) {
         _updateImageSelection(_selectedImageLayerIndex!, false);
         _isImageSelected = false;
         _selectedImageLayerIndex = null;
       }
-      
+
       // Show appropriate message based on the selected mode
       switch (mode) {
         case ToolMode.draw:
           _showSnackBarMessage('Drawing mode activated');
           break;
         case ToolMode.selectImage:
-          _showSnackBarMessage('Image selection mode activated. Tap on an image to select it, or tap again to deselect.');
+          _showSnackBarMessage(
+              'Image selection mode activated. Tap on an image to select it, or tap again to deselect.');
           break;
         case ToolMode.moveImage:
           if (_isImageSelected) {
-            _showSnackBarMessage('Image move mode activated. Drag the selected image to move it. Tap elsewhere to deselect.');
+            _showSnackBarMessage(
+                'Image move mode activated. Drag the selected image to move it. Tap elsewhere to deselect.');
           } else {
             _showSnackBarMessage('First select an image to move it.');
-            _toolMode = ToolMode.selectImage; // Revert to selection mode if no image is selected
+            _toolMode = ToolMode
+                .selectImage; // Revert to selection mode if no image is selected
           }
           break;
       }
@@ -1068,9 +1090,22 @@ class _ProCanvasScreenState extends State<ProCanvasScreen> {
   }
 
   void _clearCanvas() {
+    // Instead of reinitializing _layerManager (which causes the error),
+    // we'll delete all layers except one, then clear that layer's content
     setState(() {
-      // Create a new layer manager with a single empty layer
-      _layerManager = LayerManager(baseLayerName: 'Background');
+      // Keep track of the current number of layers
+      final layerCount = _layerManager.layers.length;
+      
+      // Delete all layers except the first one
+      for (int i = layerCount - 1; i > 0; i--) {
+        _layerManager.deleteLayer(i);
+      }
+      
+      // Select the first layer
+      _layerManager.selectLayer(0);
+      
+      // Clear the content of the first layer by setting its payload to an empty list
+      _layerManager.setPayload(0, <DrawingPoint?>[]);
     });
   }
 
@@ -1080,38 +1115,39 @@ class _ProCanvasScreenState extends State<ProCanvasScreen> {
       const SnackBar(content: Text('Image saved (simulated)')),
     );
   }
-  
+
   // Helper method to show snackbar messages
   void _showSnackBarMessage(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(message)),
     );
   }
-  
+
   // Handle image selection and interaction
   void _handleImageInteraction(Offset position) {
     // Check all layers for images and see if the position is within any image
     bool foundImage = false;
-    
+
     for (int i = 0; i < _layerManager.layers.length; i++) {
       final layer = _layerManager.layers[i];
-      
-      if (layer.contentType == ContentType.image && layer.visible && !layer.locked) {
+
+      if (layer.contentType == ContentType.image &&
+          layer.visible &&
+          !layer.locked) {
         if (layer.payload is Map) {
           final Map imageData = layer.payload as Map;
           final ui.Image? img = imageData['image'] as ui.Image?;
           final Offset imgPosition = imageData['position'] as Offset;
           final double scale = imageData['scale'] as double;
-          
+
           if (img != null) {
             // Calculate image bounds
             final Rect imageBounds = Rect.fromLTWH(
-              imgPosition.dx,
-              imgPosition.dy,
-              img.width.toDouble() * scale,
-              img.height.toDouble() * scale
-            );
-            
+                imgPosition.dx,
+                imgPosition.dy,
+                img.width.toDouble() * scale,
+                img.height.toDouble() * scale);
+
             // Check if position is within image bounds
             if (imageBounds.contains(position)) {
               // Check if we're clicking on the same image that's already selected
@@ -1127,17 +1163,18 @@ class _ProCanvasScreenState extends State<ProCanvasScreen> {
                   if (_isImageSelected && _selectedImageLayerIndex != null) {
                     _updateImageSelection(_selectedImageLayerIndex!, false);
                   }
-                  
+
                   // Select this image
                   _isImageSelected = true;
                   _selectedImageLayerIndex = i;
                   _updateImageSelection(i, true);
-                  _toolMode = ToolMode.moveImage; // Switch to move mode automatically
-                  
+                  _toolMode =
+                      ToolMode.moveImage; // Switch to move mode automatically
+
                   _showSnackBarMessage('Image selected. You can now move it.');
                 });
               }
-              
+
               foundImage = true;
               break;
             }
@@ -1145,13 +1182,13 @@ class _ProCanvasScreenState extends State<ProCanvasScreen> {
         }
       }
     }
-    
+
     // If no image was found at the position, deselect any selected image
     if (!foundImage && _isImageSelected && _canDeselectOnTap) {
       _deselectCurrentImage();
     }
   }
-  
+
   // Helper method to deselect the current image
   void _deselectCurrentImage() {
     setState(() {
@@ -1160,40 +1197,40 @@ class _ProCanvasScreenState extends State<ProCanvasScreen> {
       }
       _isImageSelected = false;
       _selectedImageLayerIndex = null;
-      
+
       // Return to drawing mode instead of staying in selection mode
       _toolMode = ToolMode.draw;
       _showSnackBarMessage('Returned to drawing mode');
     });
   }
-  
+
   // Update the selection state of an image
   void _updateImageSelection(int layerIndex, bool isSelected) {
     final layer = _layerManager.layers[layerIndex];
-    
+
     if (layer.contentType == ContentType.image && layer.payload is Map) {
       final Map imageData = Map.from(layer.payload as Map);
       imageData['isSelected'] = isSelected;
       _layerManager.setPayload(layerIndex, imageData);
     }
   }
-  
+
   // Get the current position of an image in a layer
   Offset _getImagePosition(int layerIndex) {
     final layer = _layerManager.layers[layerIndex];
-    
+
     if (layer.contentType == ContentType.image && layer.payload is Map) {
       final Map imageData = layer.payload as Map;
       return imageData['position'] as Offset;
     }
-    
+
     return Offset.zero; // Fallback
   }
-  
+
   // Update the position of an image in a layer
   void _updateImagePosition(int layerIndex, Offset newPosition) {
     final layer = _layerManager.layers[layerIndex];
-    
+
     if (layer.contentType == ContentType.image && layer.payload is Map) {
       final Map imageData = Map.from(layer.payload as Map);
       imageData['position'] = newPosition;
@@ -1217,18 +1254,21 @@ class _ProCanvasScreenState extends State<ProCanvasScreen> {
     final Size screenSize = MediaQuery.of(context).size;
     final double screenWidth = screenSize.width - 60; // Account for toolbar
     final double screenHeight = screenSize.height - 48; // Account for AppBar
-    
+
     // Calculate zoom to fit canvas on screen with some padding
     final double widthRatio = (screenWidth - 40) / _canvasSettings.size.width;
-    final double heightRatio = (screenHeight - 40) / _canvasSettings.size.height;
+    final double heightRatio =
+        (screenHeight - 40) / _canvasSettings.size.height;
     final double fitZoom = math.min(widthRatio, heightRatio);
-    
+
     setState(() {
       _zoomLevel = math.min(1.0, fitZoom); // Don't zoom in more than 100%
-      
+
       // Center the canvas
-      final double centeredX = (screenWidth - (_canvasSettings.size.width * _zoomLevel)) / 2 + 60;
-      final double centeredY = (screenHeight - (_canvasSettings.size.height * _zoomLevel)) / 2;
+      final double centeredX =
+          (screenWidth - (_canvasSettings.size.width * _zoomLevel)) / 2 + 60;
+      final double centeredY =
+          (screenHeight - (_canvasSettings.size.height * _zoomLevel)) / 2;
       _canvasOffset = Offset(centeredX, centeredY);
     });
   }
@@ -1238,61 +1278,72 @@ class _ProCanvasScreenState extends State<ProCanvasScreen> {
   void _handleScaleStart(ScaleStartDetails details) {
     final localPosition = details.localFocalPoint;
     final adjustedPosition = (localPosition - _canvasOffset) / _zoomLevel;
-    _lastFocalPoint = details.focalPoint;  // Ensure focal point is set for continuous updates
-    
+    _lastFocalPoint =
+        details.focalPoint; // Ensure focal point is set for continuous updates
+
     // Check if the point is within canvas boundaries
-    final canvasBounds = Rect.fromLTWH(0, 0, _canvasSettings.size.width, _canvasSettings.size.height);
+    final canvasBounds = Rect.fromLTWH(
+        0, 0, _canvasSettings.size.width, _canvasSettings.size.height);
     final isWithinCanvas = canvasBounds.contains(adjustedPosition);
-    
-    debugPrint('ScaleStart: local=$localPosition, adjusted=$adjustedPosition, zoom=$_zoomLevel, brushType=$_brushType, withinCanvas=$isWithinCanvas');
-    
+
+    debugPrint(
+        'ScaleStart: local=$localPosition, adjusted=$adjustedPosition, zoom=$_zoomLevel, brushType=$_brushType, withinCanvas=$isWithinCanvas');
+
     // Check if we're in image selection mode and trying to interact with an image
     if (_toolMode == ToolMode.selectImage) {
       _handleImageInteraction(adjustedPosition);
       return;
     }
-    
+
     // If we're in image move mode and have a selected image
-    if (_toolMode == ToolMode.moveImage && _isImageSelected && _selectedImageLayerIndex != null) {
+    if (_toolMode == ToolMode.moveImage &&
+        _isImageSelected &&
+        _selectedImageLayerIndex != null) {
       _dragStartPosition = adjustedPosition;
       _imageInitialPosition = _getImagePosition(_selectedImageLayerIndex!);
       _canDeselectOnTap = false; // Prevent deselection during drag operation
       return;
     }
-    
+
     // If we tap on the canvas (not on an image) in any mode, deselect any selected image
     if (isWithinCanvas && _isImageSelected && _canDeselectOnTap) {
       _deselectCurrentImage();
     }
-    
+
     if (!isWithinCanvas && _brushType != BrushType.smartEraser) {
       // Don't draw outside canvas boundaries (except for eraser which can erase outside)
       return;
     }
-    
+
     setState(() {
       // Use non-final variable so we can reassign it if needed
       var currentLayer = _layerManager.currentLayer;
-      
+
       // Handle drawing based on layer content type
       if (currentLayer.contentType == ContentType.image) {
         // If the layer contains an image, convert it to a drawing layer first
         // Create a new drawing layer with the same properties
         _layerManager.addLayer(name: '${currentLayer.name} Drawing');
-        _layerManager.setPayload(_layerManager.currentLayerIndex, <DrawingPoint?>[]);
+        _layerManager
+            .setPayload(_layerManager.currentLayerIndex, <DrawingPoint?>[]);
         currentLayer = _layerManager.currentLayer; // Get the new current layer
       }
-      
+
       if (currentLayer.payload == null) {
-        _layerManager.setPayload(_layerManager.currentLayerIndex, <DrawingPoint?>[]);
+        _layerManager
+            .setPayload(_layerManager.currentLayerIndex, <DrawingPoint?>[]);
       }
-      
+
       // Now we can safely cast to List<DrawingPoint?>
       final points = currentLayer.payload as List<DrawingPoint?>;
-      
+
       if (_brushType == BrushType.smartEraser) {
-        debugPrint('Eraser mode: removing points within tolerance $_strokeWidth');
-        points.removeWhere((p) => p != null && !p.isEraser && (p.point - adjustedPosition).distance <= _strokeWidth);
+        debugPrint(
+            'Eraser mode: removing points within tolerance $_strokeWidth');
+        points.removeWhere((p) =>
+            p != null &&
+            !p.isEraser &&
+            (p.point - adjustedPosition).distance <= _strokeWidth);
       } else {
         debugPrint('Drawing mode: adding point at $adjustedPosition');
         points.add(
@@ -1317,20 +1368,26 @@ class _ProCanvasScreenState extends State<ProCanvasScreen> {
   }
 
   void _handleScaleUpdate(ScaleUpdateDetails details) {
-    debugPrint('ScaleUpdate called: scale=${details.scale}, isPanning=$_isPanning, lastFocalPoint=$_lastFocalPoint');
-    
+    debugPrint(
+        'ScaleUpdate called: scale=${details.scale}, isPanning=$_isPanning, lastFocalPoint=$_lastFocalPoint');
+
     // Handle image movement if in move mode and an image is selected
-    if (_toolMode == ToolMode.moveImage && _isImageSelected && _selectedImageLayerIndex != null && _dragStartPosition != null && _imageInitialPosition != null) {
+    if (_toolMode == ToolMode.moveImage &&
+        _isImageSelected &&
+        _selectedImageLayerIndex != null &&
+        _dragStartPosition != null &&
+        _imageInitialPosition != null) {
       final localPosition = details.localFocalPoint;
       final adjustedPosition = (localPosition - _canvasOffset) / _zoomLevel;
       final delta = adjustedPosition - _dragStartPosition!;
-      
+
       setState(() {
-        _updateImagePosition(_selectedImageLayerIndex!, _imageInitialPosition! + delta);
+        _updateImagePosition(
+            _selectedImageLayerIndex!, _imageInitialPosition! + delta);
       });
       return;
     }
-    
+
     if (_isPanning && _lastFocalPoint != null) {
       // Handle panning logic remains unchanged
       final deltaScreen = details.focalPoint - _lastFocalPoint!;
@@ -1347,7 +1404,8 @@ class _ProCanvasScreenState extends State<ProCanvasScreen> {
       final canvasFocalBefore = (focal - _canvasOffset) / _zoomLevel;
       final newZoom = (_zoomLevel * details.scale).clamp(0.5, 5.0);
       final newOffset = focal - canvasFocalBefore * newZoom;
-      debugPrint('Zoom: focal=$focal oldZoom=$_zoomLevel newZoom=$newZoom oldOffset=$_canvasOffset newOffset=$newOffset');
+      debugPrint(
+          'Zoom: focal=$focal oldZoom=$_zoomLevel newZoom=$newZoom oldOffset=$_canvasOffset newOffset=$newOffset');
       setState(() {
         _zoomLevel = newZoom;
         _canvasOffset = newOffset;
@@ -1356,34 +1414,40 @@ class _ProCanvasScreenState extends State<ProCanvasScreen> {
     } else if (!_isPanning && _lastFocalPoint != null) {
       final localPosition = details.localFocalPoint;
       final adjustedPosition = (localPosition - _canvasOffset) / _zoomLevel;
-      
+
       // Check if the point is within canvas boundaries
-      final canvasBounds = Rect.fromLTWH(0, 0, _canvasSettings.size.width, _canvasSettings.size.height);
+      final canvasBounds = Rect.fromLTWH(
+          0, 0, _canvasSettings.size.width, _canvasSettings.size.height);
       final isWithinCanvas = canvasBounds.contains(adjustedPosition);
-      
-      debugPrint('Drawing update: adding point at $adjustedPosition, withinCanvas=$isWithinCanvas');
-      
+
+      debugPrint(
+          'Drawing update: adding point at $adjustedPosition, withinCanvas=$isWithinCanvas');
+
       if (!isWithinCanvas && _brushType != BrushType.smartEraser) {
         // Don't draw outside canvas boundaries (except for eraser which can erase outside)
         return;
       }
-      
+
       setState(() {
         final currentLayer = _layerManager.currentLayer;
-        
+
         // Skip update if this is an image layer and we haven't converted it yet
         if (currentLayer.contentType == ContentType.image) {
           // This shouldn't happen if _handleScaleStart is working correctly,
           // but we'll handle it just in case
           return;
         }
-        
+
         // Now we can safely cast to List<DrawingPoint?>
         final points = currentLayer.payload as List<DrawingPoint?>;
-        
+
         if (_brushType == BrushType.smartEraser) {
-          debugPrint('Eraser mode update: removing points within tolerance $_strokeWidth');
-          points.removeWhere((p) => p != null && !p.isEraser && (p.point - adjustedPosition).distance <= _strokeWidth);
+          debugPrint(
+              'Eraser mode update: removing points within tolerance $_strokeWidth');
+          points.removeWhere((p) =>
+              p != null &&
+              !p.isEraser &&
+              (p.point - adjustedPosition).distance <= _strokeWidth);
         } else {
           debugPrint('Drawing mode update: adding point at $adjustedPosition');
           points.add(
@@ -1419,7 +1483,7 @@ class _ProCanvasScreenState extends State<ProCanvasScreen> {
         _imageInitialPosition = null;
         _canDeselectOnTap = true; // Re-enable deselection after drag operation
       }
-      
+
       _isPanning = false;
       _lastFocalPoint = null;
 
@@ -1444,10 +1508,12 @@ class _ProCanvasScreenState extends State<ProCanvasScreen> {
 
   // Method to import image and add to current layer
   Future<void> _importImage() async {
-    final XFile? imageFile = await _picker.pickImage(source: ImageSource.gallery);
+    final XFile? imageFile =
+        await _picker.pickImage(source: ImageSource.gallery);
     if (imageFile != null) {
       final bytes = await imageFile.readAsBytes();
-      final img.Image originalImage = img.decodeImage(bytes)!; // Get original image to pass dimensions
+      final img.Image originalImage =
+          img.decodeImage(bytes)!; // Get original image to pass dimensions
       // Show dialog for size options with defaults
       final sizeOptions = await showDialog<Map<String, dynamic>>(
         context: context,
@@ -1464,46 +1530,56 @@ class _ProCanvasScreenState extends State<ProCanvasScreen> {
         String unit = sizeOptions['unit'];
 
         if (unit == 'percentage') {
-          final scaleFactor = width / 100; // Use width percentage, maintain aspect ratio if needed, but user specifies both
-          resizedImage = img.copyResize(originalImage, width: (originalImage.width * scaleFactor).round(), height: (originalImage.height * scaleFactor).round());
-        } else { // pixels
-          resizedImage = img.copyResize(originalImage, width: width.round(), height: height.round());
+          final scaleFactor = width /
+              100; // Use width percentage, maintain aspect ratio if needed, but user specifies both
+          resizedImage = img.copyResize(originalImage,
+              width: (originalImage.width * scaleFactor).round(),
+              height: (originalImage.height * scaleFactor).round());
+        } else {
+          // pixels
+          resizedImage = img.copyResize(originalImage,
+              width: width.round(), height: height.round());
         }
 
         final resizedBytes = img.encodePng(resizedImage);
-        final codec = await ui.instantiateImageCodec(Uint8List.fromList(resizedBytes));
+        final codec =
+            await ui.instantiateImageCodec(Uint8List.fromList(resizedBytes));
         final frameInfo = await codec.getNextFrame();
         final ui.Image resizedUiImage = frameInfo.image;
-        
+
         // Calculate the position to center the image on the canvas
         final imageWidth = resizedUiImage.width.toDouble();
         final imageHeight = resizedUiImage.height.toDouble();
-        
+
         // Scale the image to fit within the canvas if needed
         double scaleFactor = 1.0;
-        if (imageWidth > _canvasSettings.size.width || imageHeight > _canvasSettings.size.height) {
+        if (imageWidth > _canvasSettings.size.width ||
+            imageHeight > _canvasSettings.size.height) {
           final widthRatio = _canvasSettings.size.width / imageWidth;
           final heightRatio = _canvasSettings.size.height / imageHeight;
-          scaleFactor = math.min(widthRatio, heightRatio) * 0.9; // 90% of the max size to leave some margin
+          scaleFactor = math.min(widthRatio, heightRatio) *
+              0.9; // 90% of the max size to leave some margin
         }
-        
+
         // Update current layer, ensuring it's an image layer
-        _layerManager.setContentType(_layerManager.currentLayerIndex, ContentType.image);
+        _layerManager.setContentType(
+            _layerManager.currentLayerIndex, ContentType.image);
         _layerManager.setPayload(_layerManager.currentLayerIndex, {
           'image': resizedUiImage,
           'position': Offset(
-            (_canvasSettings.size.width - imageWidth * scaleFactor) / 2,
-            (_canvasSettings.size.height - imageHeight * scaleFactor) / 2
-          ),
+              (_canvasSettings.size.width - imageWidth * scaleFactor) / 2,
+              (_canvasSettings.size.height - imageHeight * scaleFactor) / 2),
           'scale': scaleFactor,
-          'isDraggable': true, // Add this flag to indicate the image can be dragged
+          'isDraggable':
+              true, // Add this flag to indicate the image can be dragged
           'isSelected': false // Track selection state
         });
-        
+
         // Automatically switch to image selection mode after inserting an image
         setState(() {
           _toolMode = ToolMode.selectImage;
-          _showSnackBarMessage('Image inserted. You can now select and move it.');
+          _showSnackBarMessage(
+              'Image inserted. You can now select and move it.');
         });
       }
     }
@@ -1547,8 +1623,8 @@ class MultiLayerPainter extends CustomPainter {
   final double checkerSquareSize;
 
   MultiLayerPainter(
-    this.layers, 
-    this.zoomLevel, 
+    this.layers,
+    this.zoomLevel,
     this.offset, {
     this.canvasSize = const Size(1080, 1080),
     this.backgroundColor = Colors.white,
@@ -1568,27 +1644,29 @@ class MultiLayerPainter extends CustomPainter {
 
     // Then scale
     canvas.scale(zoomLevel);
-    
+
     final canvasRect = Rect.fromLTWH(0, 0, canvasSize.width, canvasSize.height);
-    
+
     if (isTransparent) {
       // Draw checkered background for transparency within canvas bounds
       final checkerPaint1 = Paint()..color = Colors.white;
-      final checkerPaint2 = Paint()..color = Colors.grey.withOpacity(checkerPatternOpacity);
-      
+      final checkerPaint2 = Paint()
+        ..color = Colors.grey.withOpacity(checkerPatternOpacity);
+
       final squareSize = checkerSquareSize;
       final cols = (canvasSize.width / squareSize).ceil();
       final rows = (canvasSize.height / squareSize).ceil();
-      
+
       // First fill the entire canvas with white background
       canvas.drawRect(canvasRect, checkerPaint1);
-      
+
       // Then draw the checker pattern with grey squares
       for (int x = 0; x < cols; x++) {
         for (int y = 0; y < rows; y++) {
           if ((x + y) % 2 == 0) {
             canvas.drawRect(
-              Rect.fromLTWH(x * squareSize, y * squareSize, squareSize, squareSize),
+              Rect.fromLTWH(
+                  x * squareSize, y * squareSize, squareSize, squareSize),
               checkerPaint2,
             );
           }
@@ -1599,7 +1677,7 @@ class MultiLayerPainter extends CustomPainter {
       final bgPaint = Paint()..color = backgroundColor;
       canvas.drawRect(canvasRect, bgPaint);
     }
-    
+
     // Draw canvas border
     final borderPaint = Paint()
       ..color = Colors.black.withOpacity(0.5)
@@ -1646,61 +1724,61 @@ class MultiLayerPainter extends CustomPainter {
           final ui.Image? img = imageData['image'] as ui.Image?;
           final Offset position = imageData['position'] as Offset;
           final double scale = imageData['scale'] as double;
-          
+
           if (img != null) {
             final bool isSelected = imageData['isSelected'] as bool? ?? false;
-            
+
             // Draw the image at the specified position and scale
             canvas.drawImageRect(
               img,
               Rect.fromLTWH(0, 0, img.width.toDouble(), img.height.toDouble()),
-              Rect.fromLTWH(
-                position.dx, 
-                position.dy, 
-                img.width.toDouble() * scale, 
-                img.height.toDouble() * scale
-              ),
+              Rect.fromLTWH(position.dx, position.dy,
+                  img.width.toDouble() * scale, img.height.toDouble() * scale),
               Paint(),
             );
-            
+
             // Draw selection border if the image is selected
             if (isSelected) {
               final selectionPaint = Paint()
                 ..color = Colors.blue
                 ..style = PaintingStyle.stroke
                 ..strokeWidth = 2.0 / zoomLevel;
-              
+
               // Draw selection rectangle
               canvas.drawRect(
                 Rect.fromLTWH(
-                  position.dx - 2 / zoomLevel, 
-                  position.dy - 2 / zoomLevel, 
-                  img.width.toDouble() * scale + 4 / zoomLevel, 
-                  img.height.toDouble() * scale + 4 / zoomLevel
-                ),
+                    position.dx - 2 / zoomLevel,
+                    position.dy - 2 / zoomLevel,
+                    img.width.toDouble() * scale + 4 / zoomLevel,
+                    img.height.toDouble() * scale + 4 / zoomLevel),
                 selectionPaint,
               );
-              
+
               // Draw handle points at corners for better UX
               final handlePaint = Paint()
                 ..color = Colors.white
                 ..style = PaintingStyle.fill;
-              
+
               final handleStrokePaint = Paint()
                 ..color = Colors.blue
                 ..style = PaintingStyle.stroke
                 ..strokeWidth = 1.0 / zoomLevel;
-              
+
               final handleSize = 8.0 / zoomLevel;
-              
+
               // Draw handles at corners
               final handlePositions = [
                 Offset(position.dx, position.dy), // Top-left
-                Offset(position.dx + img.width.toDouble() * scale, position.dy), // Top-right
-                Offset(position.dx, position.dy + img.height.toDouble() * scale), // Bottom-left
-                Offset(position.dx + img.width.toDouble() * scale, position.dy + img.height.toDouble() * scale), // Bottom-right
+                Offset(position.dx + img.width.toDouble() * scale,
+                    position.dy), // Top-right
+                Offset(position.dx,
+                    position.dy + img.height.toDouble() * scale), // Bottom-left
+                Offset(
+                    position.dx + img.width.toDouble() * scale,
+                    position.dy +
+                        img.height.toDouble() * scale), // Bottom-right
               ];
-              
+
               for (final handlePos in handlePositions) {
                 canvas.drawCircle(handlePos, handleSize, handlePaint);
                 canvas.drawCircle(handlePos, handleSize, handleStrokePaint);
@@ -1715,7 +1793,7 @@ class MultiLayerPainter extends CustomPainter {
           final double imageHeight = img.height.toDouble();
           final double x = (canvasSize.width - imageWidth) / 2;
           final double y = (canvasSize.height - imageHeight) / 2;
-          
+
           canvas.drawImageRect(
             img,
             Rect.fromLTWH(0, 0, imageWidth, imageHeight),
@@ -1751,10 +1829,12 @@ class MultiLayerPainter extends CustomPainter {
     debugPrint('Found ${strokeSegments.length} stroke segments');
     for (final segment in strokeSegments) {
       if (segment.isEmpty) continue;
-      debugPrint('Segment has ${segment.length} points, first point paint: color=${segment[0].paint.color}, opacity=${segment[0].paint.color.opacity}');
+      debugPrint(
+          'Segment has ${segment.length} points, first point paint: color=${segment[0].paint.color}, opacity=${segment[0].paint.color.opacity}');
       if (segment.length < 2) continue;
       for (int i = 0; i < segment.length - 1; i++) {
-        canvas.drawLine(segment[i].point, segment[i + 1].point, segment[i].paint);
+        canvas.drawLine(
+            segment[i].point, segment[i + 1].point, segment[i].paint);
       }
     }
   }
@@ -1816,7 +1896,8 @@ class SizeSelectionDialog extends StatefulWidget {
   final double originalWidth;
   final double originalHeight;
 
-  const SizeSelectionDialog({required this.originalWidth, required this.originalHeight});
+  const SizeSelectionDialog(
+      {super.key, required this.originalWidth, required this.originalHeight});
 
   @override
   _SizeSelectionDialogState createState() => _SizeSelectionDialogState();
@@ -1838,14 +1919,14 @@ class _SizeSelectionDialogState extends State<SizeSelectionDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text('Image Size Options'),
+      title: const Text('Image Size Options'),
       content: Form(
         key: _formKey,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             TextFormField(
-              decoration: InputDecoration(labelText: 'Width'),
+              decoration: const InputDecoration(labelText: 'Width'),
               initialValue: _width.toString(),
               keyboardType: TextInputType.number,
               validator: (value) {
@@ -1860,7 +1941,7 @@ class _SizeSelectionDialogState extends State<SizeSelectionDialog> {
               onSaved: (value) => _width = double.parse(value!),
             ),
             TextFormField(
-              decoration: InputDecoration(labelText: 'Height'),
+              decoration: const InputDecoration(labelText: 'Height'),
               initialValue: _height.toString(),
               keyboardType: TextInputType.number,
               validator: (value) {
@@ -1894,16 +1975,17 @@ class _SizeSelectionDialogState extends State<SizeSelectionDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: Text('Cancel'),
+          child: const Text('Cancel'),
         ),
         TextButton(
           onPressed: () {
             if (_formKey.currentState!.validate()) {
               _formKey.currentState!.save();
-              Navigator.pop(context, {'width': _width, 'height': _height, 'unit': _unit});
+              Navigator.pop(
+                  context, {'width': _width, 'height': _height, 'unit': _unit});
             }
           },
-          child: Text('Apply'),
+          child: const Text('Apply'),
         ),
       ],
     );

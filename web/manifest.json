@@ -1,6 +1,6 @@
 {
-    "name": "dreamflow",
-    "short_name": "dreamflow",
+    "name": "DigitalPaint",
+    "short_name": "DigitalPaint",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

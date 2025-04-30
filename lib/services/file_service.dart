@@ -10,7 +10,7 @@ import '../models/painting_models.dart';
 
 /// Manages file operations for the painting app
 class FileService {
-  final Uuid _uuid = Uuid();
+  static final Uuid _uuid = Uuid(); // Fixed declaration
 
   /// Save a document as a PNG file
   Future<String?> saveAsPng(CanvasDocument document, {String? fileName}) async {

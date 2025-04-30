@@ -9,16 +9,16 @@ class LayerPanel extends StatelessWidget {
   final Function(String, bool) onLayerVisibilityChanged;
   final VoidCallback onAddLayer;
   final VoidCallback onDeleteLayer;
-  
+
   const LayerPanel({
-    Key? key,
+    super.key,
     required this.layers,
     required this.currentLayerIndex,
     required this.onLayerTap,
     required this.onLayerVisibilityChanged,
     required this.onAddLayer,
     required this.onDeleteLayer,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -29,12 +29,12 @@ class LayerPanel extends StatelessWidget {
           // Layer actions toolbar
           Container(
             height: 48,
-            padding: EdgeInsets.symmetric(horizontal: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 8),
             decoration: BoxDecoration(
               color: Theme.of(context).brightness == Brightness.dark
                   ? Colors.grey[850]
                   : Colors.grey[200],
-              borderRadius: BorderRadius.only(
+              borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(4),
                 topRight: Radius.circular(4),
               ),
@@ -46,13 +46,13 @@ class LayerPanel extends StatelessWidget {
                 Row(
                   children: [
                     IconButton(
-                      icon: Icon(Icons.add, size: 20),
+                      icon: const Icon(Icons.add, size: 20),
                       onPressed: onAddLayer,
                       tooltip: 'Add Layer',
                       color: Theme.of(context).colorScheme.primary,
                     ),
                     PopupMenuButton<String>(
-                      icon: Icon(Icons.more_vert, size: 20),
+                      icon: const Icon(Icons.more_vert, size: 20),
                       tooltip: 'Layer Options',
                       onSelected: (value) {
                         switch (value) {
@@ -71,7 +71,7 @@ class LayerPanel extends StatelessWidget {
                         }
                       },
                       itemBuilder: (context) => [
-                        PopupMenuItem(
+                        const PopupMenuItem(
                           value: 'duplicate',
                           child: Row(
                             children: [
@@ -81,7 +81,7 @@ class LayerPanel extends StatelessWidget {
                             ],
                           ),
                         ),
-                        PopupMenuItem(
+                        const PopupMenuItem(
                           value: 'merge',
                           child: Row(
                             children: [
@@ -91,7 +91,7 @@ class LayerPanel extends StatelessWidget {
                             ],
                           ),
                         ),
-                        PopupMenuItem(
+                        const PopupMenuItem(
                           value: 'group',
                           child: Row(
                             children: [
@@ -101,7 +101,7 @@ class LayerPanel extends StatelessWidget {
                             ],
                           ),
                         ),
-                        PopupMenuItem(
+                        const PopupMenuItem(
                           value: 'flatten',
                           child: Row(
                             children: [
@@ -114,7 +114,7 @@ class LayerPanel extends StatelessWidget {
                       ],
                     ),
                     IconButton(
-                      icon: Icon(Icons.delete, size: 20),
+                      icon: const Icon(Icons.delete, size: 20),
                       onPressed: layers.length > 1 ? onDeleteLayer : null,
                       tooltip: 'Delete Layer',
                       color: Theme.of(context).colorScheme.error,
@@ -124,24 +124,27 @@ class LayerPanel extends StatelessWidget {
               ],
             ),
           ),
-          
+
           // Layer list
           Expanded(
             child: ListView.builder(
               itemCount: layers.length,
               itemBuilder: (context, index) {
-                final layer = layers[layers.length - 1 - index]; // Reverse order to match painting
+                final layer = layers[layers.length -
+                    1 -
+                    index]; // Reverse order to match painting
                 final isSelected = layer.id == currentLayerIndex;
-                
+
                 return AnimatedContainer(
-                  duration: Duration(milliseconds: 200),
+                  duration: const Duration(milliseconds: 200),
                   decoration: BoxDecoration(
                     color: isSelected
                         ? Theme.of(context).colorScheme.primaryContainer
                         : Colors.transparent,
                     borderRadius: BorderRadius.circular(4),
                   ),
-                  margin: EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                  margin:
+                      const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
                   child: ListTile(
                     dense: true,
                     leading: IconButton(
@@ -150,13 +153,15 @@ class LayerPanel extends StatelessWidget {
                         size: 20,
                         color: Theme.of(context).colorScheme.primary,
                       ),
-                      onPressed: () => onLayerVisibilityChanged(layer.id, !layer.visible),
+                      onPressed: () =>
+                          onLayerVisibilityChanged(layer.id, !layer.visible),
                       tooltip: layer.visible ? 'Hide Layer' : 'Show Layer',
                     ),
                     title: Text(
                       layer.name,
                       style: TextStyle(
-                        fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                        fontWeight:
+                            isSelected ? FontWeight.bold : FontWeight.normal,
                         color: isSelected
                             ? Theme.of(context).colorScheme.onPrimaryContainer
                             : Theme.of(context).colorScheme.onSurface,
@@ -164,11 +169,13 @@ class LayerPanel extends StatelessWidget {
                     ),
                     subtitle: Text(
                       'Opacity: ${(layer.opacity * 100).toInt()}% | ${layer.blendMode.toString().split('.').last}',
-                      style: TextStyle(fontSize: 12),
+                      style: const TextStyle(fontSize: 12),
                     ),
                     onTap: () => onLayerTap(layer.id),
                     trailing: layer.isMask
-                        ? Icon(Icons.filter_alt, size: 16, color: Theme.of(context).colorScheme.primary)
+                        ? Icon(Icons.filter_alt,
+                            size: 16,
+                            color: Theme.of(context).colorScheme.primary)
                         : null,
                   ),
                 );

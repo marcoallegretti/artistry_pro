@@ -6,22 +6,23 @@ class ColorPickerPanel extends StatefulWidget {
   final Color currentColor;
   final Function(Color) onColorChanged;
   final VoidCallback onClose;
-  
+
   const ColorPickerPanel({
-    Key? key,
+    super.key,
     required this.currentColor,
     required this.onColorChanged,
     required this.onClose,
-  }) : super(key: key);
+  });
 
   @override
   _ColorPickerPanelState createState() => _ColorPickerPanelState();
 }
 
-class _ColorPickerPanelState extends State<ColorPickerPanel> with SingleTickerProviderStateMixin {
+class _ColorPickerPanelState extends State<ColorPickerPanel>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
   late Color _selectedColor;
-  
+
   @override
   void initState() {
     super.initState();
@@ -56,7 +57,7 @@ class _ColorPickerPanelState extends State<ColorPickerPanel> with SingleTickerPr
           children: [
             // Header with close button
             Container(
-              padding: EdgeInsets.fromLTRB(16, 12, 8, 8),
+              padding: const EdgeInsets.fromLTRB(16, 12, 8, 8),
               decoration: BoxDecoration(
                 border: Border(
                   bottom: BorderSide(
@@ -73,7 +74,7 @@ class _ColorPickerPanelState extends State<ColorPickerPanel> with SingleTickerPr
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                   IconButton(
-                    icon: Icon(Icons.close),
+                    icon: const Icon(Icons.close),
                     onPressed: widget.onClose,
                     tooltip: 'Close',
                     color: Theme.of(context).colorScheme.onSurface,
@@ -81,11 +82,11 @@ class _ColorPickerPanelState extends State<ColorPickerPanel> with SingleTickerPr
                 ],
               ),
             ),
-            
+
             // Tab Bar
             TabBar(
               controller: _tabController,
-              tabs: [
+              tabs: const [
                 Tab(text: 'Wheel', icon: Icon(Icons.palette, size: 16)),
                 Tab(text: 'RGB', icon: Icon(Icons.tune, size: 16)),
                 Tab(text: 'Swatches', icon: Icon(Icons.grid_view, size: 16)),
@@ -93,7 +94,7 @@ class _ColorPickerPanelState extends State<ColorPickerPanel> with SingleTickerPr
               labelColor: Theme.of(context).colorScheme.primary,
               indicatorSize: TabBarIndicatorSize.label,
             ),
-            
+
             // Tab content
             Expanded(
               child: TabBarView(
@@ -117,15 +118,16 @@ class _ColorPickerPanelState extends State<ColorPickerPanel> with SingleTickerPr
                       pickerAreaBorderRadius: BorderRadius.circular(8),
                     ),
                   ),
-                  
+
                   // RGB Sliders
                   Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('RGB Values', style: Theme.of(context).textTheme.titleSmall),
-                        SizedBox(height: 16),
+                        Text('RGB Values',
+                            style: Theme.of(context).textTheme.titleSmall),
+                        const SizedBox(height: 16),
                         ColorPicker(
                           pickerColor: _selectedColor,
                           onColorChanged: (color) {
@@ -139,23 +141,25 @@ class _ColorPickerPanelState extends State<ColorPickerPanel> with SingleTickerPr
                           paletteType: PaletteType.hsv,
                           pickerAreaBorderRadius: BorderRadius.circular(8),
                         ),
-                        SizedBox(height: 8),
-
-                        SizedBox(height: 16),
-                        Text('Hex Code', style: Theme.of(context).textTheme.titleSmall),
-                        SizedBox(height: 8),
+                        const SizedBox(height: 8),
+                        const SizedBox(height: 16),
+                        Text('Hex Code',
+                            style: Theme.of(context).textTheme.titleSmall),
+                        const SizedBox(height: 8),
                         Row(
                           children: [
                             Container(
                               width: 200,
-                              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 12, vertical: 8),
                               decoration: BoxDecoration(
-                                border: Border.all(color: Theme.of(context).dividerColor),
+                                border: Border.all(
+                                    color: Theme.of(context).dividerColor),
                                 borderRadius: BorderRadius.circular(4),
                               ),
                               child: Text(
                                 '#${_selectedColor.value.toRadixString(16).substring(2).toUpperCase()}',
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontFamily: 'monospace',
                                   fontSize: 14,
                                 ),
@@ -166,15 +170,16 @@ class _ColorPickerPanelState extends State<ColorPickerPanel> with SingleTickerPr
                       ],
                     ),
                   ),
-                  
+
                   // Color Swatches
                   Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Basic Colors', style: Theme.of(context).textTheme.titleSmall),
-                        SizedBox(height: 16),
+                        Text('Basic Colors',
+                            style: Theme.of(context).textTheme.titleSmall),
+                        const SizedBox(height: 16),
                         Wrap(
                           spacing: 8,
                           runSpacing: 8,
@@ -223,7 +228,7 @@ class _ColorPickerPanelState extends State<ColorPickerPanel> with SingleTickerPr
                                     BoxShadow(
                                       color: Colors.black.withOpacity(0.1),
                                       blurRadius: 2,
-                                      offset: Offset(0, 1),
+                                      offset: const Offset(0, 1),
                                     ),
                                   ],
                                 ),
@@ -245,13 +250,13 @@ class _ColorPickerPanelState extends State<ColorPickerPanel> with SingleTickerPr
                 ],
               ),
             ),
-            
+
             // Color preview
             Container(
               height: 50,
               decoration: BoxDecoration(
                 color: _selectedColor,
-                borderRadius: BorderRadius.only(
+                borderRadius: const BorderRadius.only(
                   bottomLeft: Radius.circular(8),
                   bottomRight: Radius.circular(8),
                 ),

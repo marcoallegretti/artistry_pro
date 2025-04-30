@@ -5,7 +5,7 @@ import '../models/painting_models.dart';
 
 /// Manages animation functionality
 class AnimationService {
-  final Uuid _uuid = Uuid();
+  static final Uuid _uuid = Uuid(); // Fixed declaration
   List<AnimationFrame> _frames = [];
   int _currentFrameIndex = 0;
   AnimationSettings _settings = AnimationSettings();

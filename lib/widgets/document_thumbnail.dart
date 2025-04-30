@@ -10,13 +10,13 @@ class DocumentThumbnail extends StatelessWidget {
   final DateTime? lastModified;
 
   const DocumentThumbnail({
-    Key? key,
+    super.key,
     required this.document,
     this.onTap,
     this.isSelected = false,
     this.thumbnail,
     this.lastModified,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +25,7 @@ class DocumentThumbnail extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: AnimatedContainer(
-        duration: Duration(milliseconds: 200),
+        duration: const Duration(milliseconds: 200),
         decoration: BoxDecoration(
           color: isSelected
               ? Theme.of(context).colorScheme.primaryContainer
@@ -35,7 +35,7 @@ class DocumentThumbnail extends StatelessWidget {
             BoxShadow(
               color: Colors.black.withOpacity(0.1),
               blurRadius: 4,
-              offset: Offset(0, 2),
+              offset: const Offset(0, 2),
             ),
           ],
           border: Border.all(
@@ -76,14 +76,15 @@ class DocumentThumbnail extends StatelessWidget {
                     right: 8,
                     bottom: 8,
                     child: Container(
-                      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
                         color: Colors.black.withOpacity(0.7),
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: Text(
                         '${document.size.width.toInt()} × ${document.size.height.toInt()}',
-                        style: TextStyle(
+                        style: const TextStyle(
                           color: Colors.white,
                           fontSize: 10,
                           fontWeight: FontWeight.bold,
@@ -97,14 +98,14 @@ class DocumentThumbnail extends StatelessWidget {
 
             // Document information
             Container(
-              padding: EdgeInsets.all(8),
+              padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
                 color: isSelected
                     ? Theme.of(context).colorScheme.primaryContainer
                     : isDarkMode
                         ? Colors.grey[800]
                         : Colors.grey[100],
-                borderRadius: BorderRadius.only(
+                borderRadius: const BorderRadius.only(
                   bottomLeft: Radius.circular(6),
                   bottomRight: Radius.circular(6),
                 ),
@@ -124,7 +125,7 @@ class DocumentThumbnail extends StatelessWidget {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  SizedBox(height: 4),
+                  const SizedBox(height: 4),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -140,7 +141,7 @@ class DocumentThumbnail extends StatelessWidget {
                                 .onSurface
                                 .withOpacity(0.7),
                           ),
-                          SizedBox(width: 4),
+                          const SizedBox(width: 4),
                           Text(
                             document.colorMode == ColorMode.RGB
                                 ? 'RGB'
@@ -180,7 +181,7 @@ class DocumentThumbnail extends StatelessWidget {
                                 .onSurface
                                 .withOpacity(0.7),
                           ),
-                          SizedBox(width: 4),
+                          const SizedBox(width: 4),
                           Text(
                             _formatDate(lastModified!),
                             style: TextStyle(
@@ -216,7 +217,7 @@ class DocumentThumbnail extends StatelessWidget {
   String _formatDate(DateTime date) {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
-    final yesterday = today.subtract(Duration(days: 1));
+    final yesterday = today.subtract(const Duration(days: 1));
     final dateToCheck = DateTime(date.year, date.month, date.day);
 
     if (dateToCheck == today) {

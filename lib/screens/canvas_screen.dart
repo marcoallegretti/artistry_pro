@@ -13,7 +13,7 @@ import '../widgets/brush_settings_panel.dart';
 import '../widgets/menu_bar.dart' as app_menu;
 
 class CanvasScreen extends StatefulWidget {
-  const CanvasScreen({Key? key}) : super(key: key);
+  const CanvasScreen({super.key});
 
   @override
   _CanvasScreenState createState() => _CanvasScreenState();
@@ -278,7 +278,7 @@ class _CanvasScreenState extends State<CanvasScreen>
                                             color:
                                                 Colors.black.withOpacity(0.2),
                                             blurRadius: 10,
-                                            offset: Offset(0, 2),
+                                            offset: const Offset(0, 2),
                                           ),
                                         ],
                                       ),
@@ -314,22 +314,23 @@ class _CanvasScreenState extends State<CanvasScreen>
                                   color: appState.preferences.darkMode
                                       ? Colors.grey[850]
                                       : Colors.grey[200],
-                                  padding: EdgeInsets.symmetric(horizontal: 12),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 12),
                                   child: Row(
                                     children: [
                                       Text(
                                         'Zoom: ${(appState.zoomLevel * 100).toStringAsFixed(0)}%',
-                                        style: TextStyle(fontSize: 12),
+                                        style: const TextStyle(fontSize: 12),
                                       ),
-                                      SizedBox(width: 16),
+                                      const SizedBox(width: 16),
                                       Text(
                                         'Dimensions: ${appState.currentDocument?.size.width.toInt()} × ${appState.currentDocument?.size.height.toInt()}',
-                                        style: TextStyle(fontSize: 12),
+                                        style: const TextStyle(fontSize: 12),
                                       ),
-                                      SizedBox(width: 16),
+                                      const SizedBox(width: 16),
                                       Text(
                                         'Current Layer: ${appState.canvasEngine.currentLayer.name}',
-                                        style: TextStyle(fontSize: 12),
+                                        style: const TextStyle(fontSize: 12),
                                         overflow: TextOverflow.ellipsis,
                                       ),
                                     ],
@@ -417,7 +418,7 @@ class _CanvasScreenState extends State<CanvasScreen>
                             top: 20,
                             child: Container(
                               width: 300,
-                              padding: EdgeInsets.all(16),
+                              padding: const EdgeInsets.all(16),
                               decoration: BoxDecoration(
                                 color: Theme.of(context).cardColor,
                                 borderRadius: BorderRadius.circular(8),
@@ -425,7 +426,7 @@ class _CanvasScreenState extends State<CanvasScreen>
                                   BoxShadow(
                                     color: Colors.black.withOpacity(0.2),
                                     blurRadius: 10,
-                                    offset: Offset(0, 5),
+                                    offset: const Offset(0, 5),
                                   ),
                                 ],
                               ),
@@ -457,7 +458,7 @@ class _CanvasScreenState extends State<CanvasScreen>
                               // Tab bar for panel sections
                               TabBar(
                                 controller: _rightPanelTabController,
-                                tabs: [
+                                tabs: const [
                                   Tab(
                                       text: 'Layers',
                                       icon: Icon(Icons.layers, size: 16)),

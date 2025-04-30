@@ -9,7 +9,7 @@ import '../widgets/new_document_dialog.dart';
 import '../screens/pro_canvas.dart';
 
 class RecentDocumentsScreen extends StatefulWidget {
-  const RecentDocumentsScreen({Key? key}) : super(key: key);
+  const RecentDocumentsScreen({super.key});
 
   @override
   _RecentDocumentsScreenState createState() => _RecentDocumentsScreenState();
@@ -19,18 +19,18 @@ class _RecentDocumentsScreenState extends State<RecentDocumentsScreen> {
   bool _isLoading = true;
   List<Map<String, dynamic>> _recentDocuments = [];
   final FileService _fileService = FileService();
-  
+
   @override
   void initState() {
     super.initState();
     _loadRecentDocuments();
   }
-  
+
   Future<void> _loadRecentDocuments() async {
     final appState = Provider.of<AppState>(context, listen: false);
     final recentFiles = appState.recentFiles;
     final loadedDocuments = <Map<String, dynamic>>[];
-    
+
     for (final filePath in recentFiles) {
       try {
         final document = await _fileService.loadProject(filePath);
@@ -42,11 +42,12 @@ class _RecentDocumentsScreenState extends State<RecentDocumentsScreen> {
             // Skip thumbnail generation if it fails
             print('Error generating thumbnail: $e');
           }
-          
+
           loadedDocuments.add({
             'document': document,
             'thumbnail': thumbnail,
-            'lastModified': DateTime.now(), // In a real app, get this from file metadata
+            'lastModified':
+                DateTime.now(), // In a real app, get this from file metadata
           });
         }
       } catch (e) {
@@ -54,13 +55,13 @@ class _RecentDocumentsScreenState extends State<RecentDocumentsScreen> {
         // Skip this document if it can't be loaded
       }
     }
-    
+
     setState(() {
       _recentDocuments = loadedDocuments;
       _isLoading = false;
     });
   }
-  
+
   void _createNewDocument(BuildContext context) {
     showDialog(
       context: context,
@@ -83,28 +84,32 @@ class _RecentDocumentsScreenState extends State<RecentDocumentsScreen> {
       ),
     );
   }
-  
+
   @override
   Widget build(BuildContext context) {
     final appState = Provider.of<AppState>(context);
-    
+
     return Scaffold(
       appBar: AppBar(
-        title: Text('ProPaint Studio'),
+        title: const Text('ProPaint Studio'),
         backgroundColor: Theme.of(context).colorScheme.surface,
         elevation: 0,
         actions: [
           IconButton(
-            icon: Icon(appState.preferences.darkMode ? Icons.light_mode : Icons.dark_mode),
+            icon: Icon(appState.preferences.darkMode
+                ? Icons.light_mode
+                : Icons.dark_mode),
             onPressed: () {
               appState.toggleDarkMode();
             },
-            tooltip: appState.preferences.darkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode',
+            tooltip: appState.preferences.darkMode
+                ? 'Switch to Light Mode'
+                : 'Switch to Dark Mode',
           ),
         ],
       ),
       body: _isLoading
-          ? Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator())
           : Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -116,22 +121,29 @@ class _RecentDocumentsScreenState extends State<RecentDocumentsScreen> {
                     children: [
                       Text(
                         'Welcome to ProPaint Studio',
-                        style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
+                        style: Theme.of(context)
+                            .textTheme
+                            .headlineMedium
+                            ?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: Theme.of(context).colorScheme.primary,
+                            ),
                       ),
-                      SizedBox(height: 8),
+                      const SizedBox(height: 8),
                       Text(
                         'Professional Digital Painting & Illustration',
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
-                        ),
+                        style:
+                            Theme.of(context).textTheme.titleMedium?.copyWith(
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onSurface
+                                      .withOpacity(0.7),
+                                ),
                       ),
                     ],
                   ),
                 ),
-                
+
                 // Action buttons
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 24.0),
@@ -139,29 +151,33 @@ class _RecentDocumentsScreenState extends State<RecentDocumentsScreen> {
                     children: [
                       ElevatedButton.icon(
                         onPressed: () => _createNewDocument(context),
-                        icon: Icon(Icons.add),
-                        label: Text('New Document'),
+                        icon: const Icon(Icons.add),
+                        label: const Text('New Document'),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Theme.of(context).colorScheme.primary,
-                          foregroundColor: Theme.of(context).colorScheme.onPrimary,
-                          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                          backgroundColor:
+                              Theme.of(context).colorScheme.primary,
+                          foregroundColor:
+                              Theme.of(context).colorScheme.onPrimary,
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 12),
                         ),
                       ),
-                      SizedBox(width: 16),
+                      const SizedBox(width: 16),
                       OutlinedButton.icon(
                         onPressed: () {
                           // Show open file dialog
                         },
-                        icon: Icon(Icons.folder_open),
-                        label: Text('Open Existing'),
+                        icon: const Icon(Icons.folder_open),
+                        label: const Text('Open Existing'),
                         style: OutlinedButton.styleFrom(
-                          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 12),
                         ),
                       ),
                     ],
                   ),
                 ),
-                
+
                 // Recent documents section
                 Padding(
                   padding: const EdgeInsets.fromLTRB(24.0, 32.0, 24.0, 16.0),
@@ -177,12 +193,12 @@ class _RecentDocumentsScreenState extends State<RecentDocumentsScreen> {
                           onPressed: () {
                             // Clear recent documents
                           },
-                          child: Text('Clear All'),
+                          child: const Text('Clear All'),
                         ),
                     ],
                   ),
                 ),
-                
+
                 // Recent documents grid
                 Expanded(
                   child: _recentDocuments.isEmpty
@@ -193,29 +209,48 @@ class _RecentDocumentsScreenState extends State<RecentDocumentsScreen> {
                               Icon(
                                 Icons.photo_album_outlined,
                                 size: 72,
-                                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.3),
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .onSurface
+                                    .withOpacity(0.3),
                               ),
-                              SizedBox(height: 16),
+                              const SizedBox(height: 16),
                               Text(
                                 'No recent documents',
-                                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
-                                ),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .titleMedium
+                                    ?.copyWith(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onSurface
+                                          .withOpacity(0.5),
+                                    ),
                               ),
-                              SizedBox(height: 8),
+                              const SizedBox(height: 8),
                               Text(
                                 'Create a new document to get started',
-                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
-                                ),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium
+                                    ?.copyWith(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onSurface
+                                          .withOpacity(0.5),
+                                    ),
                               ),
                             ],
                           ),
                         )
                       : GridView.builder(
-                          padding: EdgeInsets.all(24),
-                          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: (MediaQuery.of(context).size.width / 280).floor().clamp(1, 5),
+                          padding: const EdgeInsets.all(24),
+                          gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount:
+                                (MediaQuery.of(context).size.width / 280)
+                                    .floor()
+                                    .clamp(1, 5),
                             crossAxisSpacing: 16,
                             mainAxisSpacing: 16,
                             childAspectRatio: 0.75,
@@ -225,8 +260,9 @@ class _RecentDocumentsScreenState extends State<RecentDocumentsScreen> {
                             final item = _recentDocuments[index];
                             final document = item['document'] as CanvasDocument;
                             final thumbnail = item['thumbnail'] as ui.Image?;
-                            final lastModified = item['lastModified'] as DateTime?;
-                            
+                            final lastModified =
+                                item['lastModified'] as DateTime?;
+
                             return DocumentThumbnail(
                               document: document,
                               thumbnail: thumbnail,
@@ -234,17 +270,18 @@ class _RecentDocumentsScreenState extends State<RecentDocumentsScreen> {
                               onTap: () {
                                 // Load this document
                                 appState.loadDocument(document.filePath!);
-                                Navigator.of(context).pop(); // Go to canvas screen
+                                Navigator.of(context)
+                                    .pop(); // Go to canvas screen
                               },
                             );
                           },
                         ),
                 ),
-                
+
                 // Footer
                 Container(
                   width: double.infinity,
-                  padding: EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
                     color: Theme.of(context).brightness == Brightness.dark
                         ? Colors.grey[850]
@@ -253,7 +290,7 @@ class _RecentDocumentsScreenState extends State<RecentDocumentsScreen> {
                       BoxShadow(
                         color: Colors.black.withOpacity(0.1),
                         blurRadius: 4,
-                        offset: Offset(0, -2),
+                        offset: const Offset(0, -2),
                       ),
                     ],
                   ),
@@ -264,7 +301,10 @@ class _RecentDocumentsScreenState extends State<RecentDocumentsScreen> {
                         'ProPaint Studio v1.0.0',
                         style: TextStyle(
                           fontSize: 12,
-                          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                          color: Theme.of(context)
+                              .colorScheme
+                              .onSurface
+                              .withOpacity(0.6),
                         ),
                       ),
                       Row(
@@ -273,22 +313,28 @@ class _RecentDocumentsScreenState extends State<RecentDocumentsScreen> {
                             onPressed: () {
                               // Open help dialog
                             },
-                            icon: Icon(Icons.help_outline, size: 16),
-                            label: Text('Help'),
+                            icon: const Icon(Icons.help_outline, size: 16),
+                            label: const Text('Help'),
                             style: TextButton.styleFrom(
-                              foregroundColor: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
-                              textStyle: TextStyle(fontSize: 12),
+                              foregroundColor: Theme.of(context)
+                                  .colorScheme
+                                  .onSurface
+                                  .withOpacity(0.6),
+                              textStyle: const TextStyle(fontSize: 12),
                             ),
                           ),
                           TextButton.icon(
                             onPressed: () {
                               // Open settings dialog
                             },
-                            icon: Icon(Icons.settings_outlined, size: 16),
-                            label: Text('Settings'),
+                            icon: const Icon(Icons.settings_outlined, size: 16),
+                            label: const Text('Settings'),
                             style: TextButton.styleFrom(
-                              foregroundColor: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
-                              textStyle: TextStyle(fontSize: 12),
+                              foregroundColor: Theme.of(context)
+                                  .colorScheme
+                                  .onSurface
+                                  .withOpacity(0.6),
+                              textStyle: const TextStyle(fontSize: 12),
                             ),
                           ),
                         ],

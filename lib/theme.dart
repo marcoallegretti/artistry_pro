@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 /// Color and theme definitions for the app
 class AppTheme {
   /// Light theme colors
-  static final ColorScheme lightColorScheme = ColorScheme(
+  static const ColorScheme lightColorScheme = ColorScheme(
     primary: Color(0xFF1E88E5), // Blue
     primaryContainer: Color(0xFFBBDEFB), // Light Blue
     secondary: Color(0xFF26A69A), // Teal
@@ -18,7 +18,7 @@ class AppTheme {
   );
 
   /// Dark theme colors
-  static final ColorScheme darkColorScheme = ColorScheme(
+  static const ColorScheme darkColorScheme = ColorScheme(
     primary: Color(0xFF42A5F5), // Blue
     primaryContainer: Color(0xFF0D47A1), // Dark Blue
     secondary: Color(0xFF26A69A), // Teal
@@ -36,7 +36,7 @@ class AppTheme {
   static ThemeData lightTheme = ThemeData(
     colorScheme: lightColorScheme,
     useMaterial3: true,
-    appBarTheme: AppBarTheme(
+    appBarTheme: const AppBarTheme(
       elevation: 0,
       backgroundColor: Colors.white,
       foregroundColor: Color(0xFF212121),
@@ -48,29 +48,29 @@ class AppTheme {
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
-        backgroundColor: Color(0xFF1E88E5),
+        backgroundColor: const Color(0xFF1E88E5),
         foregroundColor: Colors.white,
-        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       ),
     ),
     outlinedButtonTheme: OutlinedButtonThemeData(
       style: OutlinedButton.styleFrom(
-        foregroundColor: Color(0xFF1E88E5),
-        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        foregroundColor: const Color(0xFF1E88E5),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       ),
     ),
     textButtonTheme: TextButtonThemeData(
       style: TextButton.styleFrom(
-        foregroundColor: Color(0xFF1E88E5),
+        foregroundColor: const Color(0xFF1E88E5),
       ),
     ),
-    iconTheme: IconThemeData(
+    iconTheme: const IconThemeData(
       color: Color(0xFF616161), // Medium Grey
       size: 24,
     ),
-    sliderTheme: SliderThemeData(
+    sliderTheme: const SliderThemeData(
       thumbShape: RoundSliderThumbShape(enabledThumbRadius: 6),
       trackHeight: 4,
       activeTrackColor: Color(0xFF1E88E5),
@@ -84,14 +84,14 @@ class AppTheme {
         if (states.contains(WidgetState.disabled)) {
           return Colors.grey.withOpacity(.32);
         }
-        return Color(0xFF1E88E5);
+        return const Color(0xFF1E88E5);
       }),
     ),
-    dividerTheme: DividerThemeData(
+    dividerTheme: const DividerThemeData(
       thickness: 1,
       color: Color(0xFFE0E0E0),
     ),
-    textTheme: TextTheme(
+    textTheme: const TextTheme(
       titleLarge: TextStyle(
           fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xFF212121)),
       titleMedium: TextStyle(
@@ -108,7 +108,7 @@ class AppTheme {
   static ThemeData darkTheme = ThemeData(
     colorScheme: darkColorScheme,
     useMaterial3: true,
-    appBarTheme: AppBarTheme(
+    appBarTheme: const AppBarTheme(
       elevation: 0,
       backgroundColor: Color(0xFF424242),
       foregroundColor: Colors.white,
@@ -120,29 +120,29 @@ class AppTheme {
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
-        backgroundColor: Color(0xFF42A5F5),
+        backgroundColor: const Color(0xFF42A5F5),
         foregroundColor: Colors.white,
-        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       ),
     ),
     outlinedButtonTheme: OutlinedButtonThemeData(
       style: OutlinedButton.styleFrom(
-        foregroundColor: Color(0xFF42A5F5),
-        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        foregroundColor: const Color(0xFF42A5F5),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       ),
     ),
     textButtonTheme: TextButtonThemeData(
       style: TextButton.styleFrom(
-        foregroundColor: Color(0xFF42A5F5),
+        foregroundColor: const Color(0xFF42A5F5),
       ),
     ),
-    iconTheme: IconThemeData(
+    iconTheme: const IconThemeData(
       color: Color(0xFFBDBDBD), // Light Grey
       size: 24,
     ),
-    sliderTheme: SliderThemeData(
+    sliderTheme: const SliderThemeData(
       thumbShape: RoundSliderThumbShape(enabledThumbRadius: 6),
       trackHeight: 4,
       activeTrackColor: Color(0xFF42A5F5),
@@ -156,14 +156,14 @@ class AppTheme {
         if (states.contains(WidgetState.disabled)) {
           return Colors.grey.withOpacity(.32);
         }
-        return Color(0xFF42A5F5);
+        return const Color(0xFF42A5F5);
       }),
     ),
-    dividerTheme: DividerThemeData(
+    dividerTheme: const DividerThemeData(
       thickness: 1,
       color: Color(0xFF616161),
     ),
-    textTheme: TextTheme(
+    textTheme: const TextTheme(
       titleLarge: TextStyle(
           fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
       titleMedium: TextStyle(
@@ -179,8 +179,8 @@ class AppTheme {
   /// Icon colors
   static Color getIconColor(BuildContext context) {
     return Theme.of(context).brightness == Brightness.light
-        ? Color(0xFF616161)
-        : Color(0xFFBDBDBD);
+        ? const Color(0xFF616161)
+        : const Color(0xFFBDBDBD);
   }
 
   /// Tool icon color
@@ -189,8 +189,8 @@ class AppTheme {
       return Theme.of(context).colorScheme.primary;
     } else {
       return Theme.of(context).brightness == Brightness.light
-          ? Color(0xFF616161)
-          : Color(0xFFBDBDBD);
+          ? const Color(0xFF616161)
+          : const Color(0xFFBDBDBD);
     }
   }
 

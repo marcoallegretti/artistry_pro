@@ -9,7 +9,10 @@ class ImageUploadHelper {
   static Future<Uint8List?> pickImageFromGallery() async {
     try {
       final XFile? image = await openFile(
-        acceptedTypeGroups: [XTypeGroup(label: 'images', extensions: ['png','jpg','jpeg','gif'])],
+        acceptedTypeGroups: [
+          const XTypeGroup(
+              label: 'images', extensions: ['png', 'jpg', 'jpeg', 'gif'])
+        ],
       );
 
       if (image != null) {

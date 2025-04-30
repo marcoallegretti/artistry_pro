@@ -7,15 +7,15 @@ class HistoryPanel extends StatelessWidget {
   final VoidCallback onUndo;
   final VoidCallback onRedo;
   final Function(int) onJumpToState;
-  
+
   const HistoryPanel({
-    Key? key,
+    super.key,
     required this.historyManager,
     required this.onUndo,
     required this.onRedo,
     required this.onJumpToState,
-  }) : super(key: key);
-  
+  });
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -51,24 +51,26 @@ class HistoryPanel extends StatelessWidget {
               ),
             ],
           ),
-          
+
           const Divider(),
-          
+
           // History list
           Expanded(
             child: historyManager.history.isEmpty
                 ? const Center(
                     child: Text(
                       'No history yet',
-                      style: TextStyle(fontStyle: FontStyle.italic, color: Colors.grey),
+                      style: TextStyle(
+                          fontStyle: FontStyle.italic, color: Colors.grey),
                     ),
                   )
                 : ListView.builder(
                     itemCount: historyManager.history.length,
                     itemBuilder: (context, index) {
                       final action = historyManager.history[index];
-                      final isCurrentState = index == historyManager.currentIndex;
-                      
+                      final isCurrentState =
+                          index == historyManager.currentIndex;
+
                       return _buildHistoryItem(
                         context,
                         action,
@@ -82,7 +84,7 @@ class HistoryPanel extends StatelessWidget {
       ),
     );
   }
-  
+
   Widget _buildHistoryItem(
     BuildContext context,
     HistoryAction action,
@@ -90,7 +92,7 @@ class HistoryPanel extends StatelessWidget {
     bool isCurrentState,
   ) {
     IconData actionIcon;
-    
+
     // Choose icon based on action type
     switch (action.type) {
       case ActionType.DRAW_STROKE:
@@ -141,19 +143,19 @@ class HistoryPanel extends StatelessWidget {
       case ActionType.ADJUSTMENT:
         actionIcon = Icons.tune;
         break;
-
     }
-    
+
     // Format the timestamp
     final time = action.timestamp;
-    final timeString = '${time.hour}:${time.minute.toString().padLeft(2, '0')}:${time.second.toString().padLeft(2, '0')}';
-    
+    final timeString =
+        '${time.hour}:${time.minute.toString().padLeft(2, '0')}:${time.second.toString().padLeft(2, '0')}';
+
     return Material(
       color: isCurrentState
           ? Theme.of(context).colorScheme.primaryContainer
           : index > historyManager.currentIndex
-              ? Colors.grey.withOpacity(0.2)  // Future states (can be redone)
-              : Colors.transparent,           // Past states (can be undone)
+              ? Colors.grey.withOpacity(0.2) // Future states (can be redone)
+              : Colors.transparent, // Past states (can be undone)
       child: InkWell(
         onTap: () => onJumpToState(index),
         child: Padding(
@@ -166,8 +168,10 @@ class HistoryPanel extends StatelessWidget {
                 color: isCurrentState
                     ? Theme.of(context).colorScheme.primary
                     : index > historyManager.currentIndex
-                        ? Colors.grey  // Future states (can be redone)
-                        : Theme.of(context).colorScheme.onSurface,  // Past states (can be undone)
+                        ? Colors.grey // Future states (can be redone)
+                        : Theme.of(context)
+                            .colorScheme
+                            .onSurface, // Past states (can be undone)
               ),
               const SizedBox(width: 8),
               Expanded(
@@ -178,12 +182,16 @@ class HistoryPanel extends StatelessWidget {
                     Text(
                       action.name,
                       style: TextStyle(
-                        fontWeight: isCurrentState ? FontWeight.bold : FontWeight.normal,
+                        fontWeight: isCurrentState
+                            ? FontWeight.bold
+                            : FontWeight.normal,
                         color: isCurrentState
                             ? Theme.of(context).colorScheme.primary
                             : index > historyManager.currentIndex
-                                ? Colors.grey  // Future states (can be redone)
-                                : Theme.of(context).colorScheme.onSurface,  // Past states (can be undone)
+                                ? Colors.grey // Future states (can be redone)
+                                : Theme.of(context)
+                                    .colorScheme
+                                    .onSurface, // Past states (can be undone)
                       ),
                     ),
                     Text(
@@ -191,7 +199,10 @@ class HistoryPanel extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 10,
                         color: isCurrentState
-                            ? Theme.of(context).colorScheme.primary.withOpacity(0.7)
+                            ? Theme.of(context)
+                                .colorScheme
+                                .primary
+                                .withOpacity(0.7)
                             : Colors.grey,
                       ),
                     ),

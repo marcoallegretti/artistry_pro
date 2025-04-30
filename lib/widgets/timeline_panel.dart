@@ -6,19 +6,19 @@ class TimelinePanel extends StatelessWidget {
   final AnimationService animationService;
   final VoidCallback onAddFrame;
   final Function(int) onFrameSelected;
-  
+
   const TimelinePanel({
-    Key? key,
+    super.key,
     required this.animationService,
     required this.onAddFrame,
     required this.onFrameSelected,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
     final frames = animationService.frames;
     final currentFrameIndex = animationService.currentFrameIndex;
-    
+
     return Container(
       color: Theme.of(context).brightness == Brightness.dark
           ? Colors.grey[850]
@@ -28,7 +28,7 @@ class TimelinePanel extends StatelessWidget {
           // Timeline toolbar
           Container(
             height: 48,
-            padding: EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
             decoration: BoxDecoration(
               border: Border(
                 bottom: BorderSide(
@@ -43,15 +43,15 @@ class TimelinePanel extends StatelessWidget {
                   'Timeline',
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
-                SizedBox(width: 16),
+                const SizedBox(width: 16),
                 Text(
                   'Frame ${currentFrameIndex + 1} of ${frames.length}',
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
-                Spacer(),
+                const Spacer(),
                 // Animation controls
                 IconButton(
-                  icon: Icon(Icons.skip_previous, size: 20),
+                  icon: const Icon(Icons.skip_previous, size: 20),
                   onPressed: () {
                     animationService.firstFrame();
                     onFrameSelected(0);
@@ -60,7 +60,7 @@ class TimelinePanel extends StatelessWidget {
                   color: Theme.of(context).colorScheme.primary,
                 ),
                 IconButton(
-                  icon: Icon(Icons.navigate_before, size: 20),
+                  icon: const Icon(Icons.navigate_before, size: 20),
                   onPressed: currentFrameIndex > 0
                       ? () {
                           animationService.previousFrame();
@@ -82,7 +82,7 @@ class TimelinePanel extends StatelessWidget {
                   color: Theme.of(context).colorScheme.primary,
                 ),
                 IconButton(
-                  icon: Icon(Icons.navigate_next, size: 20),
+                  icon: const Icon(Icons.navigate_next, size: 20),
                   onPressed: currentFrameIndex < frames.length - 1
                       ? () {
                           animationService.nextFrame();
@@ -93,7 +93,7 @@ class TimelinePanel extends StatelessWidget {
                   color: Theme.of(context).colorScheme.primary,
                 ),
                 IconButton(
-                  icon: Icon(Icons.skip_next, size: 20),
+                  icon: const Icon(Icons.skip_next, size: 20),
                   onPressed: () {
                     animationService.lastFrame();
                     onFrameSelected(frames.length - 1);
@@ -101,9 +101,9 @@ class TimelinePanel extends StatelessWidget {
                   tooltip: 'Last Frame',
                   color: Theme.of(context).colorScheme.primary,
                 ),
-                SizedBox(width: 16),
+                const SizedBox(width: 16),
                 IconButton(
-                  icon: Icon(Icons.add, size: 20),
+                  icon: const Icon(Icons.add, size: 20),
                   onPressed: onAddFrame,
                   tooltip: 'Add Frame',
                   color: Theme.of(context).colorScheme.primary,
@@ -111,22 +111,22 @@ class TimelinePanel extends StatelessWidget {
               ],
             ),
           ),
-          
+
           // Frames list
           Expanded(
             child: Container(
-              padding: EdgeInsets.symmetric(vertical: 8),
+              padding: const EdgeInsets.symmetric(vertical: 8),
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
                 itemCount: frames.length,
                 itemBuilder: (context, index) {
                   final isSelected = index == currentFrameIndex;
-                  
+
                   return GestureDetector(
                     onTap: () => onFrameSelected(index),
                     child: Container(
                       width: 80,
-                      margin: EdgeInsets.symmetric(horizontal: 4),
+                      margin: const EdgeInsets.symmetric(horizontal: 4),
                       decoration: BoxDecoration(
                         border: Border.all(
                           color: isSelected
@@ -151,7 +151,7 @@ class TimelinePanel extends StatelessWidget {
                               ),
                             ),
                           ),
-                          
+
                           // Frame info
                           Container(
                             height: 24,
@@ -163,7 +163,9 @@ class TimelinePanel extends StatelessWidget {
                                 'Frame ${index + 1}',
                                 style: TextStyle(
                                   fontSize: 12,
-                                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                                  fontWeight: isSelected
+                                      ? FontWeight.bold
+                                      : FontWeight.normal,
                                 ),
                               ),
                             ),

@@ -49,10 +49,10 @@ class CanvasPainter extends CustomPainter {
     canvas.save();
     canvas.translate(panOffset.dx, panOffset.dy);
     canvas.scale(zoomLevel);
-    
+
     // Draw checkered background for transparency
     _drawTransparencyGrid(canvas, size);
-    
+
     // Draw rulers if enabled
     if (showRulers) {
       _drawRulers(canvas, size);
@@ -69,7 +69,7 @@ class CanvasPainter extends CustomPainter {
     if (showGrid) {
       _drawGrid(canvas, size);
     }
-    
+
     // Draw selection outline if active
     if (showSelectionOutline) {
       _drawSelectionOutline(canvas);
@@ -82,7 +82,7 @@ class CanvasPainter extends CustomPainter {
       final stroke = brushEngine.createStroke(interpolatedPoints);
       brushEngine.drawStroke(canvas, stroke);
     }
-    
+
     canvas.restore();
   }
 
@@ -188,7 +188,7 @@ class CanvasPainter extends CustomPainter {
     final textPainter = TextPainter(
       text: TextSpan(
         text: 'Frame $frameNumber',
-        style: TextStyle(color: Colors.white, fontSize: 14),
+        style: const TextStyle(color: Colors.white, fontSize: 14),
       ),
       textDirection: TextDirection.ltr,
     );
@@ -199,16 +199,16 @@ class CanvasPainter extends CustomPainter {
     final rect =
         Rect.fromLTWH(10, 10, textPainter.width + 20, textPainter.height + 10);
 
-    final rrect = RRect.fromRectAndRadius(rect, Radius.circular(16));
+    final rrect = RRect.fromRectAndRadius(rect, const Radius.circular(16));
     canvas.drawRRect(rrect, paint);
 
     // Draw text
-    textPainter.paint(canvas, Offset(20, 15));
+    textPainter.paint(canvas, const Offset(20, 15));
   }
 
   void _drawSelectionOutline(Canvas canvas) {
     if (selectionService == null || !selectionService!.hasSelection) return;
-    
+
     // Draw the selection path with a dashed outline
     final path = selectionService!.selectionPath;
     if (path != null) {
@@ -216,24 +216,24 @@ class CanvasPainter extends CustomPainter {
         ..color = Colors.blue
         ..style = PaintingStyle.stroke
         ..strokeWidth = 1.0;
-      
+
       // Draw the main selection outline
       canvas.drawPath(path, paint);
-      
+
       // Draw selection handles at the corners
       if (selectionService!.rectangularSelection != null) {
         final rect = selectionService!.rectangularSelection!;
-        final handleSize = 8.0;
-        
+        const handleSize = 8.0;
+
         final handlePaint = Paint()
           ..color = Colors.white
           ..style = PaintingStyle.fill;
-        
+
         final handleBorderPaint = Paint()
           ..color = Colors.blue
           ..style = PaintingStyle.stroke
           ..strokeWidth = 1.0;
-        
+
         // Draw handles at corners
         final handlePoints = [
           Offset(rect.left, rect.top),
@@ -245,14 +245,14 @@ class CanvasPainter extends CustomPainter {
           Offset(rect.left, rect.top + rect.height / 2),
           Offset(rect.right, rect.top + rect.height / 2),
         ];
-        
+
         for (final point in handlePoints) {
           final handleRect = Rect.fromCenter(
             center: point,
             width: handleSize,
             height: handleSize,
           );
-          
+
           canvas.drawRect(handleRect, handlePaint);
           canvas.drawRect(handleRect, handleBorderPaint);
         }
@@ -261,56 +261,56 @@ class CanvasPainter extends CustomPainter {
   }
 
   void _drawRulers(Canvas canvas, Size size) {
-    final rulerSize = 20.0;
-    final tickSize = 5.0;
-    final majorTickInterval = 100.0;
-    final minorTickInterval = 25.0;
-    
+    const rulerSize = 20.0;
+    const tickSize = 5.0;
+    const majorTickInterval = 100.0;
+    const minorTickInterval = 25.0;
+
     // Draw ruler background
     final rulerPaint = Paint()
       ..color = Colors.grey[200]!
       ..style = PaintingStyle.fill;
-    
+
     // Horizontal ruler
     canvas.drawRect(
       Rect.fromLTWH(0, 0, size.width, rulerSize),
       rulerPaint,
     );
-    
+
     // Vertical ruler
     canvas.drawRect(
       Rect.fromLTWH(0, 0, rulerSize, size.height),
       rulerPaint,
     );
-    
+
     // Ruler corner
     canvas.drawRect(
-      Rect.fromLTWH(0, 0, rulerSize, rulerSize),
+      const Rect.fromLTWH(0, 0, rulerSize, rulerSize),
       Paint()..color = Colors.grey[300]!,
     );
-    
+
     // Draw ticks and numbers
     final tickPaint = Paint()
       ..color = Colors.black54
       ..strokeWidth = 1.0
       ..style = PaintingStyle.stroke;
-    
-    final textStyle = TextStyle(
+
+    const textStyle = TextStyle(
       color: Colors.black87,
       fontSize: 10,
     );
-    
+
     // Horizontal ruler ticks
     for (double x = 0; x < size.width; x += minorTickInterval) {
       final isMajorTick = x % majorTickInterval == 0;
       final tickHeight = isMajorTick ? tickSize * 2 : tickSize;
-      
+
       canvas.drawLine(
         Offset(x, rulerSize),
         Offset(x, rulerSize - tickHeight),
         tickPaint,
       );
-      
+
       if (isMajorTick && x > 0) {
         final textPainter = TextPainter(
           text: TextSpan(
@@ -319,26 +319,27 @@ class CanvasPainter extends CustomPainter {
           ),
           textDirection: TextDirection.ltr,
         );
-        
+
         textPainter.layout();
         textPainter.paint(
           canvas,
-          Offset(x - textPainter.width / 2, rulerSize - tickHeight - textPainter.height),
+          Offset(x - textPainter.width / 2,
+              rulerSize - tickHeight - textPainter.height),
         );
       }
     }
-    
+
     // Vertical ruler ticks
     for (double y = 0; y < size.height; y += minorTickInterval) {
       final isMajorTick = y % majorTickInterval == 0;
       final tickWidth = isMajorTick ? tickSize * 2 : tickSize;
-      
+
       canvas.drawLine(
         Offset(rulerSize, y),
         Offset(rulerSize - tickWidth, y),
         tickPaint,
       );
-      
+
       if (isMajorTick && y > 0) {
         final textPainter = TextPainter(
           text: TextSpan(
@@ -347,11 +348,12 @@ class CanvasPainter extends CustomPainter {
           ),
           textDirection: TextDirection.ltr,
         );
-        
+
         textPainter.layout();
         textPainter.paint(
           canvas,
-          Offset(rulerSize - tickWidth - textPainter.width - 2, y - textPainter.height / 2),
+          Offset(rulerSize - tickWidth - textPainter.width - 2,
+              y - textPainter.height / 2),
         );
       }
     }
@@ -370,6 +372,7 @@ class CanvasPainter extends CustomPainter {
         oldDelegate.panOffset != panOffset ||
         oldDelegate.showSelectionOutline != showSelectionOutline ||
         oldDelegate.showRulers != showRulers ||
-        (oldDelegate.selectionService?.hasSelection != selectionService?.hasSelection);
+        (oldDelegate.selectionService?.hasSelection !=
+            selectionService?.hasSelection);
   }
 }

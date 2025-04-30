@@ -11,11 +11,11 @@ class MenuBar extends StatelessWidget {
   final VoidCallback onResetView;
 
   const MenuBar({
-    Key? key,
+    super.key,
     required this.onZoomIn,
     required this.onZoomOut,
     required this.onResetView,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +35,7 @@ class MenuBar extends StatelessWidget {
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
             blurRadius: 2,
-            offset: Offset(0, 1),
+            offset: const Offset(0, 1),
           ),
         ],
       ),
@@ -47,33 +47,33 @@ class MenuBar extends StatelessWidget {
             label: 'File',
             items: [
               PopupMenuItem(
-                child: Text('New...'),
+                child: const Text('New...'),
                 onTap: () {
                   // Show new document dialog
                   _showNewDocumentDialog(context);
                 },
               ),
               PopupMenuItem(
-                child: Text('Open...'),
+                child: const Text('Open...'),
                 onTap: () {
                   // Open file functionality
                 },
               ),
               PopupMenuItem(
-                child: Text('Save'),
+                child: const Text('Save'),
                 onTap: () {
                   appState.saveCurrentDocument();
                 },
               ),
               PopupMenuItem(
-                child: Text('Save As...'),
+                child: const Text('Save As...'),
                 onTap: () {
                   // Save as dialog
                 },
               ),
-              PopupMenuDivider(),
+              const PopupMenuDivider(),
               PopupMenuItem(
-                child: Text('Export...'),
+                child: const Text('Export...'),
                 onTap: () {
                   // Use a future to avoid problems with onTap
                   Future.delayed(Duration.zero, () {
@@ -90,7 +90,13 @@ class MenuBar extends StatelessWidget {
             label: 'Edit',
             items: [
               PopupMenuItem(
-                child: Row(
+                onTap: () {
+                  if (appState.canvasEngine.canUndo) {
+                    appState.canvasEngine.undo();
+                  }
+                },
+                enabled: appState.canvasEngine.canUndo,
+                child: const Row(
                   children: [
                     Text('Undo'),
                     Spacer(),
@@ -98,15 +104,15 @@ class MenuBar extends StatelessWidget {
                         style: TextStyle(fontSize: 12, color: Colors.grey)),
                   ],
                 ),
-                onTap: () {
-                  if (appState.canvasEngine.canUndo) {
-                    appState.canvasEngine.undo();
-                  }
-                },
-                enabled: appState.canvasEngine.canUndo,
               ),
               PopupMenuItem(
-                child: Row(
+                onTap: () {
+                  if (appState.canvasEngine.canRedo) {
+                    appState.canvasEngine.redo();
+                  }
+                },
+                enabled: appState.canvasEngine.canRedo,
+                child: const Row(
                   children: [
                     Text('Redo'),
                     Spacer(),
@@ -114,25 +120,19 @@ class MenuBar extends StatelessWidget {
                         style: TextStyle(fontSize: 12, color: Colors.grey)),
                   ],
                 ),
-                onTap: () {
-                  if (appState.canvasEngine.canRedo) {
-                    appState.canvasEngine.redo();
-                  }
-                },
-                enabled: appState.canvasEngine.canRedo,
               ),
-              PopupMenuDivider(),
-              PopupMenuItem(
+              const PopupMenuDivider(),
+              const PopupMenuItem(
+                enabled: false,
                 child: Text('Cut'),
-                enabled: false,
               ),
-              PopupMenuItem(
+              const PopupMenuItem(
+                enabled: false,
                 child: Text('Copy'),
-                enabled: false,
               ),
-              PopupMenuItem(
-                child: Text('Paste'),
+              const PopupMenuItem(
                 enabled: false,
+                child: Text('Paste'),
               ),
             ],
           ),
@@ -143,18 +143,18 @@ class MenuBar extends StatelessWidget {
             label: 'View',
             items: [
               PopupMenuItem(
-                child: Text('Zoom In'),
                 onTap: onZoomIn,
+                child: const Text('Zoom In'),
               ),
               PopupMenuItem(
-                child: Text('Zoom Out'),
                 onTap: onZoomOut,
+                child: const Text('Zoom Out'),
               ),
               PopupMenuItem(
-                child: Text('Reset View'),
                 onTap: onResetView,
+                child: const Text('Reset View'),
               ),
-              PopupMenuDivider(),
+              const PopupMenuDivider(),
               PopupMenuItem(
                 child: Text(
                     appState.preferences.darkMode ? 'Light Mode' : 'Dark Mode'),
@@ -164,7 +164,7 @@ class MenuBar extends StatelessWidget {
               ),
               CheckedPopupMenuItem(
                 checked: appState.preferences.showGrid,
-                child: Text('Show Grid'),
+                child: const Text('Show Grid'),
                 onTap: () {
                   // Toggle grid
                 },
@@ -178,39 +178,39 @@ class MenuBar extends StatelessWidget {
             label: 'Layer',
             items: [
               PopupMenuItem(
-                child: Text('New Layer'),
+                child: const Text('New Layer'),
                 onTap: () {
                   appState.addNewLayer();
                 },
               ),
               PopupMenuItem(
-                child: Text('Delete Layer'),
                 onTap: () {
                   appState.deleteCurrentLayer();
                 },
                 enabled: appState.currentDocument?.layers.length != null &&
                     appState.currentDocument!.layers.length > 1,
+                child: const Text('Delete Layer'),
               ),
               PopupMenuItem(
-                child: Text('Duplicate Layer'),
+                child: const Text('Duplicate Layer'),
                 onTap: () {
                   // Duplicate layer functionality
                 },
               ),
-              PopupMenuDivider(),
+              const PopupMenuDivider(),
               PopupMenuItem(
-                child: Text('Merge Down'),
                 onTap: () {
                   // Merge down functionality
                 },
                 enabled: false,
+                child: const Text('Merge Down'),
               ),
               PopupMenuItem(
-                child: Text('Merge Visible'),
                 onTap: () {
                   // Merge visible functionality
                 },
                 enabled: false,
+                child: const Text('Merge Visible'),
               ),
             ],
           ),
@@ -222,27 +222,27 @@ class MenuBar extends StatelessWidget {
               label: 'Animation',
               items: [
                 PopupMenuItem(
-                  child: Text('Add Frame'),
+                  child: const Text('Add Frame'),
                   onTap: () {
                     appState.addNewFrame();
                   },
                 ),
                 PopupMenuItem(
-                  child: Text('Delete Frame'),
                   onTap: () {
                     // Delete frame functionality
                   },
                   enabled: appState.animationService.frames.length > 1,
+                  child: const Text('Delete Frame'),
                 ),
                 PopupMenuItem(
-                  child: Text('Duplicate Frame'),
+                  child: const Text('Duplicate Frame'),
                   onTap: () {
                     // Duplicate frame functionality
                   },
                 ),
-                PopupMenuDivider(),
+                const PopupMenuDivider(),
                 PopupMenuItem(
-                  child: Text('Animation Settings'),
+                  child: const Text('Animation Settings'),
                   onTap: () {
                     // Animation settings dialog
                   },
@@ -250,11 +250,11 @@ class MenuBar extends StatelessWidget {
               ],
             ),
 
-          Spacer(),
+          const Spacer(),
 
           // Quick access tools
           IconButton(
-            icon: Icon(Icons.zoom_in),
+            icon: const Icon(Icons.zoom_in),
             onPressed: onZoomIn,
             tooltip: 'Zoom In',
             color: Theme.of(context).colorScheme.primary,
@@ -263,18 +263,18 @@ class MenuBar extends StatelessWidget {
           // Current zoom level
           Text(
             '${(appState.zoomLevel * 100).toInt()}%',
-            style: TextStyle(fontSize: 14),
+            style: const TextStyle(fontSize: 14),
           ),
 
           IconButton(
-            icon: Icon(Icons.zoom_out),
+            icon: const Icon(Icons.zoom_out),
             onPressed: onZoomOut,
             tooltip: 'Zoom Out',
             color: Theme.of(context).colorScheme.primary,
           ),
 
           IconButton(
-            icon: Icon(Icons.fit_screen),
+            icon: const Icon(Icons.fit_screen),
             onPressed: onResetView,
             tooltip: 'Fit to Screen',
             color: Theme.of(context).colorScheme.primary,
@@ -305,20 +305,20 @@ class MenuBar extends StatelessWidget {
   }) {
     return PopupMenuButton(
       itemBuilder: (context) => items,
+      offset: const Offset(0, 48),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+      ),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
         child: Center(
           child: Text(
             label,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 14,
             ),
           ),
         ),
-      ),
-      offset: Offset(0, 48),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8),
       ),
     );
   }
