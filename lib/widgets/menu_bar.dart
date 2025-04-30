@@ -89,38 +89,6 @@ class MenuBar extends StatelessWidget {
             context: context,
             label: 'Edit',
             items: [
-              PopupMenuItem(
-                onTap: () {
-                  if (appState.canvasEngine.canUndo) {
-                    appState.canvasEngine.undo();
-                  }
-                },
-                enabled: appState.canvasEngine.canUndo,
-                child: const Row(
-                  children: [
-                    Text('Undo'),
-                    Spacer(),
-                    Text('Ctrl+Z',
-                        style: TextStyle(fontSize: 12, color: Colors.grey)),
-                  ],
-                ),
-              ),
-              PopupMenuItem(
-                onTap: () {
-                  if (appState.canvasEngine.canRedo) {
-                    appState.canvasEngine.redo();
-                  }
-                },
-                enabled: appState.canvasEngine.canRedo,
-                child: const Row(
-                  children: [
-                    Text('Redo'),
-                    Spacer(),
-                    Text('Ctrl+Shift+Z',
-                        style: TextStyle(fontSize: 12, color: Colors.grey)),
-                  ],
-                ),
-              ),
               const PopupMenuDivider(),
               const PopupMenuItem(
                 enabled: false,

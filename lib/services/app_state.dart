@@ -25,7 +25,7 @@ enum ToolType {
 
 /// Manages the state of the entire app
 class AppState extends ChangeNotifier {
-  static final Uuid _uuid = Uuid(); // Fixed declaration
+  static const Uuid _uuid = Uuid(); // Fixed declaration
   final FileService _fileService = FileService();
 
   // Core services

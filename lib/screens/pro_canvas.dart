@@ -70,11 +70,20 @@ class _ProCanvasScreenState extends State<ProCanvasScreen> {
     super.initState();
     _layerManager = LayerManager(baseLayerName: 'Background');
     _canvasSettings = CanvasSettings.defaultSettings;
-
-    // Show canvas size dialog after the widget is built
+    _layerManager.addListener(_onLayerChange);  // Add listener for layer changes
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _showCanvasSizeDialog();
     });
+  }
+
+  void _onLayerChange() {
+    setState(() {});  // Trigger rebuild on layer manager changes
+  }
+
+  @override
+  void dispose() {
+    _layerManager.removeListener(_onLayerChange);  // Remove listener to prevent memory leaks
+    super.dispose();
   }
 
   // Show background settings dialog
@@ -286,14 +295,14 @@ class _ProCanvasScreenState extends State<ProCanvasScreen> {
               onPressed: _showBackgroundSettingsDialog,
             ),
             IconButton(
-              icon: const Icon(Icons.undo),
+              icon: Icon(Icons.undo, color: _layerManager.canUndo ? Colors.black : Colors.grey),
+              onPressed: _layerManager.canUndo ? _layerManager.undo : null,
               tooltip: 'Undo',
-              onPressed: () => _layerManager.undo(),
             ),
             IconButton(
-              icon: const Icon(Icons.redo),
+              icon: Icon(Icons.redo, color: _layerManager.canRedo ? Colors.black : Colors.grey),
+              onPressed: _layerManager.canRedo ? _layerManager.redo : null,
               tooltip: 'Redo',
-              onPressed: () => _layerManager.redo(),
             ),
             IconButton(
               icon: const Icon(Icons.save),
@@ -322,31 +331,19 @@ class _ProCanvasScreenState extends State<ProCanvasScreen> {
                   onScaleStart: _handleScaleStart,
                   onScaleUpdate: _handleScaleUpdate,
                   onScaleEnd: _handleScaleEnd,
-                  child: Container(
-                    color: Color.fromRGBO(
-                      _backgroundColor.red,
-                      _backgroundColor.green,
-                      _backgroundColor.blue,
-                      _backgroundColor.alpha / 255.0,
+                  child: CustomPaint(
+                    painter: MultiLayerPainter(
+                      _layerManager.layers,
+                      _zoomLevel,
+                      _canvasOffset,
+                      canvasSize: _canvasSettings.size,
+                      backgroundColor: _backgroundColor,
+                      isTransparent: _canvasSettings.isTransparent,
+                      checkerPatternOpacity:
+                          _canvasSettings.checkerPatternOpacity,
+                      checkerSquareSize: _canvasSettings.checkerSquareSize,
                     ),
-                    width: double.infinity,
-                    height: double.infinity,
-                    child: ClipRect(
-                      child: CustomPaint(
-                        painter: MultiLayerPainter(
-                          _layerManager.layers,
-                          _zoomLevel,
-                          _canvasOffset,
-                          canvasSize: _canvasSettings.size,
-                          backgroundColor: _backgroundColor,
-                          isTransparent: _canvasSettings.isTransparent,
-                          checkerPatternOpacity:
-                              _canvasSettings.checkerPatternOpacity,
-                          checkerSquareSize: _canvasSettings.checkerSquareSize,
-                        ),
-                        size: Size.infinite,
-                      ),
-                    ),
+                    child: Container(),  // Or whatever child is appropriate
                   ),
                 ),
               ),
@@ -1282,12 +1279,10 @@ class _ProCanvasScreenState extends State<ProCanvasScreen> {
         details.focalPoint; // Ensure focal point is set for continuous updates
 
     // Check if the point is within canvas boundaries
-    final canvasBounds = Rect.fromLTWH(
-        0, 0, _canvasSettings.size.width, _canvasSettings.size.height);
-    final isWithinCanvas = canvasBounds.contains(adjustedPosition);
+    final canvasBounds = Rect.fromLTWH(0, 0, _canvasSettings.size.width, _canvasSettings.size.height);
 
     debugPrint(
-        'ScaleStart: local=$localPosition, adjusted=$adjustedPosition, zoom=$_zoomLevel, brushType=$_brushType, withinCanvas=$isWithinCanvas');
+        'ScaleStart: local=$localPosition, adjusted=$adjustedPosition, zoom=$_zoomLevel, brushType=$_brushType, withinCanvas=$canvasBounds.contains(adjustedPosition)');
 
     // Check if we're in image selection mode and trying to interact with an image
     if (_toolMode == ToolMode.selectImage) {
@@ -1306,11 +1301,11 @@ class _ProCanvasScreenState extends State<ProCanvasScreen> {
     }
 
     // If we tap on the canvas (not on an image) in any mode, deselect any selected image
-    if (isWithinCanvas && _isImageSelected && _canDeselectOnTap) {
+    if (canvasBounds.contains(adjustedPosition) && _isImageSelected && _canDeselectOnTap) {
       _deselectCurrentImage();
     }
 
-    if (!isWithinCanvas && _brushType != BrushType.smartEraser) {
+    if (!canvasBounds.contains(adjustedPosition) && _brushType != BrushType.smartEraser) {
       // Don't draw outside canvas boundaries (except for eraser which can erase outside)
       return;
     }
@@ -1329,13 +1324,33 @@ class _ProCanvasScreenState extends State<ProCanvasScreen> {
         currentLayer = _layerManager.currentLayer; // Get the new current layer
       }
 
-      if (currentLayer.payload == null) {
-        _layerManager
-            .setPayload(_layerManager.currentLayerIndex, <DrawingPoint?>[]);
+      List<DrawingPoint?> points;
+      // Handle payload conversion more gracefully
+      if (_layerManager.currentLayer.payload is List) {
+        // If it's already a list, convert it properly
+        var rawPoints = _layerManager.currentLayer.payload as List;
+        
+        // Check if we can use the existing list or need to create a new one
+        if (rawPoints.isEmpty || rawPoints.every((p) => p == null || p is DrawingPoint)) {
+          // Safe to cast if empty or all elements are DrawingPoint or null
+          points = List<DrawingPoint?>.from(rawPoints);
+        } else {
+          // If the list contains incompatible elements, create a new empty list
+          debugPrint('Layer payload contains incompatible elements. Creating new drawing points list.');
+          points = <DrawingPoint?>[];
+          // Don't save state for initialization - we'll save at stroke end
+          _layerManager.setPayload(_layerManager.currentLayerIndex, points, saveState: false);
+        }
+      } else {
+        // If it's not a list at all, create a new empty list
+        debugPrint('Layer payload is not a List. Creating new drawing points list.');
+        points = <DrawingPoint?>[];
+        // Don't save state for initialization - we'll save at stroke end
+        _layerManager.setPayload(_layerManager.currentLayerIndex, points, saveState: false);
       }
-
-      // Now we can safely cast to List<DrawingPoint?>
-      final points = currentLayer.payload as List<DrawingPoint?>;
+      
+      // Save state at the beginning of the stroke so we can undo to before we started drawing
+      _layerManager.saveState();
 
       if (_brushType == BrushType.smartEraser) {
         debugPrint(
@@ -1416,14 +1431,12 @@ class _ProCanvasScreenState extends State<ProCanvasScreen> {
       final adjustedPosition = (localPosition - _canvasOffset) / _zoomLevel;
 
       // Check if the point is within canvas boundaries
-      final canvasBounds = Rect.fromLTWH(
-          0, 0, _canvasSettings.size.width, _canvasSettings.size.height);
-      final isWithinCanvas = canvasBounds.contains(adjustedPosition);
+      final canvasBounds = Rect.fromLTWH(0, 0, _canvasSettings.size.width, _canvasSettings.size.height);
 
       debugPrint(
-          'Drawing update: adding point at $adjustedPosition, withinCanvas=$isWithinCanvas');
+          'Drawing update: adding point at $adjustedPosition, withinCanvas=$canvasBounds.contains(adjustedPosition)');
 
-      if (!isWithinCanvas && _brushType != BrushType.smartEraser) {
+      if (!canvasBounds.contains(adjustedPosition) && _brushType != BrushType.smartEraser) {
         // Don't draw outside canvas boundaries (except for eraser which can erase outside)
         return;
       }
@@ -1438,8 +1451,30 @@ class _ProCanvasScreenState extends State<ProCanvasScreen> {
           return;
         }
 
-        // Now we can safely cast to List<DrawingPoint?>
-        final points = currentLayer.payload as List<DrawingPoint?>;
+        List<DrawingPoint?> points;
+        // Handle payload conversion more gracefully, using same approach as in _handleScaleStart
+        if (_layerManager.currentLayer.payload is List) {
+          // If it's already a list, convert it properly
+          var rawPoints = _layerManager.currentLayer.payload as List;
+          
+          // Check if we can use the existing list or need to create a new one
+          if (rawPoints.isEmpty || rawPoints.every((p) => p == null || p is DrawingPoint)) {
+            // Safe to cast if empty or all elements are DrawingPoint or null
+            points = List<DrawingPoint?>.from(rawPoints);
+          } else {
+            // If the list contains incompatible elements, create a new empty list
+            debugPrint('Layer payload contains incompatible elements in update. Creating new drawing points list.');
+            points = <DrawingPoint?>[];
+            // No need to save state for initialization
+            _layerManager.setPayload(_layerManager.currentLayerIndex, points, saveState: false);
+          }
+        } else {
+          // If it's not a list at all, create a new empty list
+          debugPrint('Layer payload is not a List in update. Creating new drawing points list.');
+          points = <DrawingPoint?>[];
+          // No need to save state for initialization
+          _layerManager.setPayload(_layerManager.currentLayerIndex, points, saveState: false);
+        }
 
         if (_brushType == BrushType.smartEraser) {
           debugPrint(
@@ -1467,7 +1502,8 @@ class _ProCanvasScreenState extends State<ProCanvasScreen> {
             ),
           );
         }
-        _layerManager.setPayload(_layerManager.currentLayerIndex, points);
+        // Don't save state for each update - we'll save only at the start and end of strokes
+        _layerManager.setPayload(_layerManager.currentLayerIndex, points, saveState: false);
         _lastFocalPoint = details.focalPoint;
       });
     } else {
@@ -1484,23 +1520,38 @@ class _ProCanvasScreenState extends State<ProCanvasScreen> {
         _canDeselectOnTap = true; // Re-enable deselection after drag operation
       }
 
-      _isPanning = false;
-      _lastFocalPoint = null;
-
-      // Add null to mark the end of a stroke if we were drawing
-      if (!_isPanning && _toolMode == ToolMode.draw) {
-        // Get current layer
-        final currentLayer = _layerManager.currentLayer;
-
-        // Get the points from the current layer's payload
+      final currentLayer = _layerManager.currentLayer;
+      
+      if (currentLayer.contentType == ContentType.drawing) {
+        // Add null to signal end of stroke
         if (currentLayer.payload != null) {
-          final points = currentLayer.payload as List<DrawingPoint?>;
-
+          List<DrawingPoint?> points;
+          // Handle payload conversion more gracefully, using same approach as in _handleScaleStart
+          if (currentLayer.payload is List) {
+            // If it's already a list, convert it properly
+            var rawPoints = currentLayer.payload as List;
+            
+            // Check if we can use the existing list or need to create a new one
+            if (rawPoints.isEmpty || rawPoints.every((p) => p == null || p is DrawingPoint)) {
+              // Safe to cast if empty or all elements are DrawingPoint or null
+              points = List<DrawingPoint?>.from(rawPoints);
+            } else {
+              // If the list contains incompatible elements, create a new empty list
+              debugPrint('Layer payload contains incompatible elements in end. Creating new drawing points list.');
+              points = <DrawingPoint?>[];
+            }
+          } else {
+            // If it's not a list at all, create a new empty list
+            debugPrint('Layer payload is not a List in end. Creating new drawing points list.');
+            points = <DrawingPoint?>[];
+          }
+          
           // Add null to mark the end of a stroke
           points.add(null);
-
-          // Update the layer's payload
-          _layerManager.setPayload(_layerManager.currentLayerIndex, points);
+          
+          // This is the end of a stroke - save the current state for proper undo
+          // and then update the payload
+          _layerManager.setPayload(_layerManager.currentLayerIndex, points, saveState: true);
         }
       }
     });
@@ -1809,7 +1860,12 @@ class MultiLayerPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant MultiLayerPainter oldDelegate) => true;
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    if (oldDelegate is MultiLayerPainter) {
+      return layers != oldDelegate.layers || zoomLevel != oldDelegate.zoomLevel || offset != oldDelegate.offset || backgroundColor != oldDelegate.backgroundColor || isTransparent != oldDelegate.isTransparent || checkerPatternOpacity != oldDelegate.checkerPatternOpacity || checkerSquareSize != oldDelegate.checkerSquareSize;
+    }
+    return true;
+  }
 
   void _paintLayer(Canvas canvas, List<DrawingPoint?> points) {
     debugPrint('Painting layer with ${points.length} points');

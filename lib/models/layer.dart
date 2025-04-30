@@ -46,7 +46,11 @@ class Layer {
     this.locked = false,
     required this.contentType,
     this.payload,
-  });
+  })  {
+    if (payload == null && contentType == ContentType.drawing) {
+      this.payload = <dynamic>[];
+    }
+  }
 
   /// Helper clone with updated fields.
   Layer copyWith({

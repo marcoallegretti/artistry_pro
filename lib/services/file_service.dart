@@ -10,7 +10,7 @@ import '../models/painting_models.dart';
 
 /// Manages file operations for the painting app
 class FileService {
-  static final Uuid _uuid = Uuid(); // Fixed declaration
+  static const Uuid _uuid = Uuid(); // Fixed declaration
 
   /// Save a document as a PNG file
   Future<String?> saveAsPng(CanvasDocument document, {String? fileName}) async {
@@ -291,7 +291,7 @@ class FileService {
       final documentWidth = (manifest['width'] as num).toDouble();
       final documentHeight = (manifest['height'] as num).toDouble();
       final documentResolution = (manifest['resolution'] as num).toDouble();
-      final documentColorMode = ColorMode.RGB; // Default to RGB
+      const documentColorMode = ColorMode.RGB; // Default to RGB
 
       // Load layers
       final List<Layer> layers = [];
@@ -300,7 +300,7 @@ class FileService {
         final layerName = layerInfo['name'] ?? 'Layer';
         final layerVisible = layerInfo['visible'] ?? true;
         final layerOpacity = (layerInfo['opacity'] as num).toDouble();
-        final layerBlendMode = BlendMode.NORMAL; // Default to normal
+        const layerBlendMode = BlendMode.NORMAL; // Default to normal
         final layerIsMask = layerInfo['isMask'] ?? false;
         final layerParentId = layerInfo['parentLayerId'];
         final layerFilePath = layerInfo['filePath'];
