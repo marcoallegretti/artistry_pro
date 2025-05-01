@@ -15,7 +15,8 @@ Artistry Pro is a digital art and design application built with Flutter. It prov
 - **Transform Capabilities**: Rotate, scale, and transform your artwork with precision (TODO)
 - **Filter Effects**: Apply and customize various filters to enhance your artwork (TODO)
 - **Animation Support**: Create frame-by-frame animations (TODO)
-- **History Management**: Comprehensive undo/redo functionality (TODO)
+- **History Management**: Comprehensive undo/redo functionality
+- **Multiple Projects Persistence**: Manage and save multiple art projects for continued work
 - **Export Options**: Export your work in various formats (TODO)
 - **Cross-Platform**: Available on Windows, macOS, iOS, Android, and web
 
