@@ -27,32 +27,47 @@ class LayerManager extends ChangeNotifier {
       ),
     );
   }
+  
+  /// Factory constructor to create a LayerManager from existing layers
+  /// Used when loading a saved project
+  factory LayerManager.fromLayers({
+    required List<Layer> layers,
+    required int currentLayerIndex,
+  }) {
+    final layerManager = LayerManager(baseLayerName: null);
+    // Remove the default layer
+    layerManager._layers.clear();
+    // Add the provided layers
+    layerManager._layers.addAll(layers);
+    layerManager._currentLayerIndex = currentLayerIndex;
+    return layerManager;
+  }
 
   // ---------------------------------------------------------------------------
   // Internal state
   // ---------------------------------------------------------------------------
-  List<Layer> _layers = [];
+  final List<Layer> _layers = [];
   int _currentLayerIndex = 0;
 
   // Undo/Redo stacks and methods
-  List<Map<String, dynamic>> _undoStack = [];
-  List<Map<String, dynamic>> _redoStack = [];
-  
+  final List<Map<String, dynamic>> _undoStack = [];
+  final List<Map<String, dynamic>> _redoStack = [];
+
   /// Public method to save the current state to the undo stack
   void saveState() {
     _saveState();
   }
-  
+
   void _saveState() {
     // Make a copy of the current state
     final layersCopy = <Layer>[];
-    
+
     for (var layer in _layers) {
       if (layer.contentType == ContentType.drawing && layer.payload is List) {
         // Deep clone drawing points for drawing layers
         final List<DrawingPoint?> pointsCopy = [];
         final points = layer.payload as List;
-        
+
         for (var point in points) {
           if (point == null) {
             pointsCopy.add(null);
@@ -62,31 +77,31 @@ class LayerManager extends ChangeNotifier {
               ..strokeWidth = point.paint.strokeWidth
               ..strokeCap = point.paint.strokeCap
               ..blendMode = point.paint.blendMode;
-              
-            pointsCopy.add(DrawingPoint(point.point, newPaint, isEraser: point.isEraser));
+
+            pointsCopy.add(
+                DrawingPoint(point.point, newPaint, isEraser: point.isEraser));
           }
         }
-        
+
         layersCopy.add(layer.copyWith(payload: pointsCopy));
       } else {
         // For other layer types, make a shallow copy
         layersCopy.add(layer.copyWith());
       }
     }
-    
-    _undoStack.add({
-      'layers': layersCopy,
-      'index': _currentLayerIndex
-    });
-    
+
+    _undoStack.add({'layers': layersCopy, 'index': _currentLayerIndex});
+
     debugPrint('State saved to undo stack. Stack size: ${_undoStack.length}');
   }
+
   bool get canUndo => _undoStack.isNotEmpty;
   bool get canRedo => _redoStack.isNotEmpty;
   void undo() {
     if (canUndo) {
-      print('LayerManager: Undo called. Current undo stack size: ${_undoStack.length}, restoring state.');
-      
+      print(
+          'LayerManager: Undo called. Current undo stack size: ${_undoStack.length}, restoring state.');
+
       // Save current state to redo stack first
       final currentState = <Layer>[];
       for (var layer in _layers) {
@@ -94,7 +109,7 @@ class LayerManager extends ChangeNotifier {
           // Deep clone drawing points
           final List<DrawingPoint?> pointsCopy = [];
           final points = layer.payload as List;
-          
+
           for (var point in points) {
             if (point == null) {
               pointsCopy.add(null);
@@ -104,41 +119,42 @@ class LayerManager extends ChangeNotifier {
                 ..strokeWidth = point.paint.strokeWidth
                 ..strokeCap = point.paint.strokeCap
                 ..blendMode = point.paint.blendMode;
-                
-              pointsCopy.add(DrawingPoint(point.point, newPaint, isEraser: point.isEraser));
+
+              pointsCopy.add(DrawingPoint(point.point, newPaint,
+                  isEraser: point.isEraser));
             }
           }
-          
+
           currentState.add(layer.copyWith(payload: pointsCopy));
         } else {
           currentState.add(layer.copyWith());
         }
       }
-      
-      _redoStack.add({
-        'layers': currentState,
-        'index': _currentLayerIndex
-      });
-      
+
+      _redoStack.add({'layers': currentState, 'index': _currentLayerIndex});
+
       // Now restore the previous state from undo stack
       var state = _undoStack.removeLast();
       _layers.clear();
-      
+
       // Direct copy of the layers from saved state - no need for conversion as we saved them correctly
       final savedLayers = state['layers'] as List<Layer>;
       _layers.addAll(savedLayers);
-      
+
       _currentLayerIndex = state['index'] as int;
-      print('LayerManager: Undo applied. New undo stack size: ${_undoStack.length}, redo stack size: ${_redoStack.length}');
+      print(
+          'LayerManager: Undo applied. New undo stack size: ${_undoStack.length}, redo stack size: ${_redoStack.length}');
       notifyListeners();
     } else {
       print('LayerManager: Undo attempted but no states to undo.');
     }
   }
+
   void redo() {
     if (canRedo) {
-      print('LayerManager: Redo called. Current redo stack size: ${_redoStack.length}, restoring state.');
-      
+      print(
+          'LayerManager: Redo called. Current redo stack size: ${_redoStack.length}, restoring state.');
+
       // Save current state to undo stack first
       final currentState = <Layer>[];
       for (var layer in _layers) {
@@ -146,7 +162,7 @@ class LayerManager extends ChangeNotifier {
           // Deep clone drawing points
           final List<DrawingPoint?> pointsCopy = [];
           final points = layer.payload as List;
-          
+
           for (var point in points) {
             if (point == null) {
               pointsCopy.add(null);
@@ -156,32 +172,31 @@ class LayerManager extends ChangeNotifier {
                 ..strokeWidth = point.paint.strokeWidth
                 ..strokeCap = point.paint.strokeCap
                 ..blendMode = point.paint.blendMode;
-                
-              pointsCopy.add(DrawingPoint(point.point, newPaint, isEraser: point.isEraser));
+
+              pointsCopy.add(DrawingPoint(point.point, newPaint,
+                  isEraser: point.isEraser));
             }
           }
-          
+
           currentState.add(layer.copyWith(payload: pointsCopy));
         } else {
           currentState.add(layer.copyWith());
         }
       }
-      
-      _undoStack.add({
-        'layers': currentState,
-        'index': _currentLayerIndex
-      });
-      
+
+      _undoStack.add({'layers': currentState, 'index': _currentLayerIndex});
+
       // Now restore the next state from redo stack
       var state = _redoStack.removeLast();
       _layers.clear();
-      
+
       // Direct copy of the layers from saved state - no need for conversion as we saved them correctly
       final savedLayers = state['layers'] as List<Layer>;
       _layers.addAll(savedLayers);
-      
+
       _currentLayerIndex = state['index'] as int;
-      print('LayerManager: Redo applied. New undo stack size: ${_undoStack.length}, redo stack size: ${_redoStack.length}');
+      print(
+          'LayerManager: Redo applied. New undo stack size: ${_undoStack.length}, redo stack size: ${_redoStack.length}');
       notifyListeners();
     } else {
       print('LayerManager: Redo attempted but no states to redo.');
@@ -233,9 +248,13 @@ class LayerManager extends ChangeNotifier {
       if (oldIndex < newIndex) newIndex--;
       final layer = _layers.removeAt(oldIndex);
       _layers.insert(newIndex, layer);
-      if (_currentLayerIndex == oldIndex) _currentLayerIndex = newIndex;
-      else if (_currentLayerIndex > oldIndex && _currentLayerIndex <= newIndex) _currentLayerIndex--;
-      else if (_currentLayerIndex < oldIndex && _currentLayerIndex >= newIndex) _currentLayerIndex++;
+      if (_currentLayerIndex == oldIndex) {
+        _currentLayerIndex = newIndex;
+      } else if (_currentLayerIndex > oldIndex &&
+          _currentLayerIndex <= newIndex)
+        _currentLayerIndex--;
+      else if (_currentLayerIndex < oldIndex && _currentLayerIndex >= newIndex)
+        _currentLayerIndex++;
       notifyListeners();
     }
   }
@@ -278,17 +297,19 @@ class LayerManager extends ChangeNotifier {
   /// filling the undo stack with every small change.
   void setPayload(int index, dynamic payload, {bool saveState = true}) {
     if (saveState) {
-      print('LayerManager: Saving state before setting payload for layer index $index');
+      print(
+          'LayerManager: Saving state before setting payload for layer index $index');
       _saveState();
       _redoStack.clear();
     }
-    
+
     _layers[index].payload = payload;
-    
+
     if (saveState) {
-      print('LayerManager: Payload set for layer index $index. Undo stack size: ${_undoStack.length}, Redo stack size: ${_redoStack.length}');
+      print(
+          'LayerManager: Payload set for layer index $index. Undo stack size: ${_undoStack.length}, Redo stack size: ${_redoStack.length}');
     }
-    
+
     notifyListeners();
   }
 

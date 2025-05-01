@@ -46,9 +46,9 @@ class Layer {
     this.locked = false,
     required this.contentType,
     this.payload,
-  })  {
+  }) {
     if (payload == null && contentType == ContentType.drawing) {
-      this.payload = <dynamic>[];
+      payload = <dynamic>[];
     }
   }
 

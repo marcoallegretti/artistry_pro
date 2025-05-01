@@ -5,15 +5,20 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:image/image.dart' as img;
+import 'package:provider/provider.dart';
 
 import '../models/layer.dart';
 import '../models/canvas_settings.dart';
+import '../models/project.dart';
 import '../services/layer_manager.dart';
+import '../services/project_service.dart';
 import '../widgets/background_panel.dart';
 import '../widgets/canvas_size_dialog.dart';
 
 class ProCanvasScreen extends StatefulWidget {
-  const ProCanvasScreen({super.key});
+  final String? projectId;
+  
+  const ProCanvasScreen({super.key, this.projectId});
 
   @override
   _ProCanvasScreenState createState() => _ProCanvasScreenState();
@@ -21,7 +26,7 @@ class ProCanvasScreen extends StatefulWidget {
 
 class _ProCanvasScreenState extends State<ProCanvasScreen> {
   // Layer management
-  late final LayerManager _layerManager;
+  late LayerManager _layerManager = LayerManager(baseLayerName: 'Background');
 
   // Tool settings
   Color _selectedColor = Colors.black;
@@ -52,7 +57,7 @@ class _ProCanvasScreenState extends State<ProCanvasScreen> {
   late CanvasSettings _canvasSettings;
   double _zoomLevel = 1.0;
   Offset _canvasOffset = Offset.zero;
-  bool _isPanning = false;
+  final bool _isPanning = false;
   Color _backgroundColor = Colors.white;
 
   // Undo/Redo handled by LayerManager
@@ -65,24 +70,114 @@ class _ProCanvasScreenState extends State<ProCanvasScreen> {
   // Add image picker instance
   final ImagePicker _picker = ImagePicker();
 
+  // Add canvas key for capturing thumbnails
+  final GlobalKey canvasKey = GlobalKey();
+  
   @override
   void initState() {
     super.initState();
-    _layerManager = LayerManager(baseLayerName: 'Background');
+    
+    // Initialize with default settings
     _canvasSettings = CanvasSettings.defaultSettings;
-    _layerManager.addListener(_onLayerChange);  // Add listener for layer changes
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _showCanvasSizeDialog();
-    });
+    _layerManager.addListener(_onLayerChange);
+    
+    if (widget.projectId != null) {
+      // Load existing project
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _loadProject();
+      });
+    } else {
+      // Show canvas size dialog for new projects
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _showCanvasSizeDialog();
+      });
+    }
+  }
+  
+  Future<void> _loadProject() async {
+    try {
+      final projectService = Provider.of<ProjectService>(context, listen: false);
+      
+      // Attempt to load the project
+      debugPrint('ProCanvasScreen attempting to load project: ${widget.projectId}');
+      await projectService.loadProject(widget.projectId!);
+      
+      final loadedProject = projectService.currentProject;
+      if (loadedProject == null) {
+        throw Exception('Project could not be loaded');
+      }
+      
+      debugPrint('Project loaded successfully, updating UI');
+      setState(() {
+        // If layers exist in the project, use them
+        if (loadedProject.layers.isNotEmpty) {
+          _layerManager = LayerManager.fromLayers(
+            layers: loadedProject.layers,
+            currentLayerIndex: loadedProject.currentLayerIndex,
+          );
+        } else {
+          // If no layers, create a default one
+          debugPrint('No layers found in project, using default');
+        }
+        
+        _canvasSettings = loadedProject.canvasSettings;
+        _backgroundColor = _canvasSettings.backgroundColor;
+      });
+      
+      _layerManager.addListener(_onLayerChange);
+      
+      // Save the loaded project to ensure it's properly stored
+      _saveProject(showMessage: false);
+    } catch (e) {
+      debugPrint('Error loading project: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error loading project: $e')),
+      );
+    }
   }
 
   void _onLayerChange() {
-    setState(() {});  // Trigger rebuild on layer manager changes
+    setState(() {}); // Trigger rebuild on layer manager changes
+    
+    // Auto-save when layers change (but don't show message)
+    _autoSaveProject();
+  }
+  
+  Future<void> _autoSaveProject() async {
+    if (!mounted) return;
+    
+    try {
+      final projectService = Provider.of<ProjectService>(context, listen: false);
+      final project = projectService.currentProject;
+      
+      if (project != null) {
+        // Print info about current layer payload for debugging
+        if (_layerManager.currentLayerIndex >= 0 && _layerManager.currentLayerIndex < _layerManager.layers.length) {
+          final layer = _layerManager.layers[_layerManager.currentLayerIndex];
+          if (layer.contentType == ContentType.drawing) {
+            final points = layer.payload as List<dynamic>;
+            debugPrint('Auto-saving: current layer has ${points.length} points');
+          }
+        }
+        
+        // Don't generate thumbnail on auto-save to improve performance
+        await projectService.saveCurrentProject(
+          layers: _layerManager.layers,
+          currentLayerIndex: _layerManager.currentLayerIndex,
+          canvasSettings: _canvasSettings,
+          context: context,
+          canvasKey: null, // Skip thumbnail generation for auto-save
+        );
+      }
+    } catch (e) {
+      debugPrint('Auto-save error: $e');
+    }
   }
 
   @override
   void dispose() {
-    _layerManager.removeListener(_onLayerChange);  // Remove listener to prevent memory leaks
+    _layerManager.removeListener(
+        _onLayerChange); // Remove listener to prevent memory leaks
     super.dispose();
   }
 
@@ -277,12 +372,15 @@ class _ProCanvasScreenState extends State<ProCanvasScreen> {
     final toolbarWidth =
         mediaQuery.size.width > 600 ? 80.0 : 70.0; // Responsive width
 
+    final projectService = Provider.of<ProjectService>(context, listen: false);
+    final projectTitle = projectService.currentProject?.title ?? 'Untitled Project';
+
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(
             56.0), // Increased height for better touch targets
         child: AppBar(
-          title: const Text('Artistry Pro'),
+          title: Text(projectTitle),
           actions: [
             IconButton(
               icon: const Icon(Icons.aspect_ratio),
@@ -295,19 +393,21 @@ class _ProCanvasScreenState extends State<ProCanvasScreen> {
               onPressed: _showBackgroundSettingsDialog,
             ),
             IconButton(
-              icon: Icon(Icons.undo, color: _layerManager.canUndo ? Colors.black : Colors.grey),
+              icon: Icon(Icons.undo,
+                  color: _layerManager.canUndo ? Colors.black : Colors.grey),
               onPressed: _layerManager.canUndo ? _layerManager.undo : null,
               tooltip: 'Undo',
             ),
             IconButton(
-              icon: Icon(Icons.redo, color: _layerManager.canRedo ? Colors.black : Colors.grey),
+              icon: Icon(Icons.redo,
+                  color: _layerManager.canRedo ? Colors.black : Colors.grey),
               onPressed: _layerManager.canRedo ? _layerManager.redo : null,
               tooltip: 'Redo',
             ),
             IconButton(
               icon: const Icon(Icons.save),
-              tooltip: 'Save Image',
-              onPressed: _saveImage,
+              tooltip: 'Save Project',
+              onPressed: _saveProject,
             ),
             IconButton(
               icon: const Icon(Icons.delete),
@@ -343,7 +443,7 @@ class _ProCanvasScreenState extends State<ProCanvasScreen> {
                           _canvasSettings.checkerPatternOpacity,
                       checkerSquareSize: _canvasSettings.checkerSquareSize,
                     ),
-                    child: Container(),  // Or whatever child is appropriate
+                    child: Container(), // Or whatever child is appropriate
                   ),
                 ),
               ),
@@ -1092,25 +1192,58 @@ class _ProCanvasScreenState extends State<ProCanvasScreen> {
     setState(() {
       // Keep track of the current number of layers
       final layerCount = _layerManager.layers.length;
-      
+
       // Delete all layers except the first one
       for (int i = layerCount - 1; i > 0; i--) {
         _layerManager.deleteLayer(i);
       }
-      
+
       // Select the first layer
       _layerManager.selectLayer(0);
-      
+
       // Clear the content of the first layer by setting its payload to an empty list
       _layerManager.setPayload(0, <DrawingPoint?>[]);
     });
+    _saveProject(showMessage: false);
   }
 
-  void _saveImage() {
-    // This would save the image in a real app
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Image saved (simulated)')),
-    );
+  Future<void> _saveProject({bool showMessage = true}) async {
+    try {
+      final projectService = Provider.of<ProjectService>(context, listen: false);
+      final project = projectService.currentProject;
+      
+      if (project != null) {
+        debugPrint('Saving project: ${project.id} with ${_layerManager.layers.length} layers');
+        
+        // Print layers info for debugging
+        for (int i = 0; i < _layerManager.layers.length; i++) {
+          final layer = _layerManager.layers[i];
+          if (layer.contentType == ContentType.drawing) {
+            final points = layer.payload as List<dynamic>;
+            debugPrint('Layer $i (${layer.name}): ${points.length} points');
+          }
+        }
+        
+        await projectService.saveCurrentProject(
+          layers: _layerManager.layers,
+          currentLayerIndex: _layerManager.currentLayerIndex,
+          canvasSettings: _canvasSettings,
+          context: context,
+          canvasKey: canvasKey,
+        );
+        
+        if (showMessage) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Project saved successfully')),
+          );
+        }
+      }
+    } catch (e) {
+      debugPrint('Error saving project: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error saving project: $e')),
+      );
+    }
   }
 
   // Helper method to show snackbar messages
@@ -1120,7 +1253,6 @@ class _ProCanvasScreenState extends State<ProCanvasScreen> {
     );
   }
 
-  // Handle image selection and interaction
   void _handleImageInteraction(Offset position) {
     // Check all layers for images and see if the position is within any image
     bool foundImage = false;
@@ -1279,7 +1411,8 @@ class _ProCanvasScreenState extends State<ProCanvasScreen> {
         details.focalPoint; // Ensure focal point is set for continuous updates
 
     // Check if the point is within canvas boundaries
-    final canvasBounds = Rect.fromLTWH(0, 0, _canvasSettings.size.width, _canvasSettings.size.height);
+    final canvasBounds = Rect.fromLTWH(
+        0, 0, _canvasSettings.size.width, _canvasSettings.size.height);
 
     debugPrint(
         'ScaleStart: local=$localPosition, adjusted=$adjustedPosition, zoom=$_zoomLevel, brushType=$_brushType, withinCanvas=$canvasBounds.contains(adjustedPosition)');
@@ -1301,11 +1434,14 @@ class _ProCanvasScreenState extends State<ProCanvasScreen> {
     }
 
     // If we tap on the canvas (not on an image) in any mode, deselect any selected image
-    if (canvasBounds.contains(adjustedPosition) && _isImageSelected && _canDeselectOnTap) {
+    if (canvasBounds.contains(adjustedPosition) &&
+        _isImageSelected &&
+        _canDeselectOnTap) {
       _deselectCurrentImage();
     }
 
-    if (!canvasBounds.contains(adjustedPosition) && _brushType != BrushType.smartEraser) {
+    if (!canvasBounds.contains(adjustedPosition) &&
+        _brushType != BrushType.smartEraser) {
       // Don't draw outside canvas boundaries (except for eraser which can erase outside)
       return;
     }
@@ -1329,36 +1465,66 @@ class _ProCanvasScreenState extends State<ProCanvasScreen> {
       if (_layerManager.currentLayer.payload is List) {
         // If it's already a list, convert it properly
         var rawPoints = _layerManager.currentLayer.payload as List;
-        
+
         // Check if we can use the existing list or need to create a new one
-        if (rawPoints.isEmpty || rawPoints.every((p) => p == null || p is DrawingPoint)) {
+        if (rawPoints.isEmpty ||
+            rawPoints.every((p) => p == null || p is DrawingPoint)) {
           // Safe to cast if empty or all elements are DrawingPoint or null
           points = List<DrawingPoint?>.from(rawPoints);
         } else {
           // If the list contains incompatible elements, create a new empty list
-          debugPrint('Layer payload contains incompatible elements. Creating new drawing points list.');
+          debugPrint(
+              'Layer payload contains incompatible elements. Creating new drawing points list.');
           points = <DrawingPoint?>[];
           // Don't save state for initialization - we'll save at stroke end
-          _layerManager.setPayload(_layerManager.currentLayerIndex, points, saveState: false);
+          _layerManager.setPayload(_layerManager.currentLayerIndex, points,
+              saveState: false);
         }
       } else {
         // If it's not a list at all, create a new empty list
-        debugPrint('Layer payload is not a List. Creating new drawing points list.');
+        debugPrint(
+            'Layer payload is not a List. Creating new drawing points list.');
         points = <DrawingPoint?>[];
         // Don't save state for initialization - we'll save at stroke end
-        _layerManager.setPayload(_layerManager.currentLayerIndex, points, saveState: false);
+        _layerManager.setPayload(_layerManager.currentLayerIndex, points,
+            saveState: false);
       }
-      
+
       // Save state at the beginning of the stroke so we can undo to before we started drawing
       _layerManager.saveState();
 
       if (_brushType == BrushType.smartEraser) {
         debugPrint(
-            'Eraser mode: removing points within tolerance $_strokeWidth');
-        points.removeWhere((p) =>
-            p != null &&
-            !p.isEraser &&
-            (p.point - adjustedPosition).distance <= _strokeWidth);
+            'Eraser mode: finding and splitting strokes at $adjustedPosition');
+        // Create a new list to hold the modified points
+        List<DrawingPoint?> newPoints = [];
+        bool foundIntersection = false;
+
+        // Process existing points to find intersections with the eraser
+        for (int i = 0; i < points.length; i++) {
+          // Add null points (stroke separators) as is
+          if (points[i] == null) {
+            newPoints.add(null);
+            continue;
+          }
+
+          // For non-null points, check if they're close to the eraser position
+          if (!points[i]!.isEraser &&
+              (points[i]!.point - adjustedPosition).distance <=
+                  _strokeWidth / 2) {
+            // Found a point to erase - add a stroke separator
+            newPoints.add(null);
+            foundIntersection = true;
+          } else {
+            // Keep the point
+            newPoints.add(points[i]);
+          }
+        }
+
+        // If we found an intersection, update the points
+        if (foundIntersection) {
+          points = newPoints;
+        }
       } else {
         debugPrint('Drawing mode: adding point at $adjustedPosition');
         points.add(
@@ -1431,12 +1597,14 @@ class _ProCanvasScreenState extends State<ProCanvasScreen> {
       final adjustedPosition = (localPosition - _canvasOffset) / _zoomLevel;
 
       // Check if the point is within canvas boundaries
-      final canvasBounds = Rect.fromLTWH(0, 0, _canvasSettings.size.width, _canvasSettings.size.height);
+      final canvasBounds = Rect.fromLTWH(
+          0, 0, _canvasSettings.size.width, _canvasSettings.size.height);
 
       debugPrint(
           'Drawing update: adding point at $adjustedPosition, withinCanvas=$canvasBounds.contains(adjustedPosition)');
 
-      if (!canvasBounds.contains(adjustedPosition) && _brushType != BrushType.smartEraser) {
+      if (!canvasBounds.contains(adjustedPosition) &&
+          _brushType != BrushType.smartEraser) {
         // Don't draw outside canvas boundaries (except for eraser which can erase outside)
         return;
       }
@@ -1456,33 +1624,63 @@ class _ProCanvasScreenState extends State<ProCanvasScreen> {
         if (_layerManager.currentLayer.payload is List) {
           // If it's already a list, convert it properly
           var rawPoints = _layerManager.currentLayer.payload as List;
-          
+
           // Check if we can use the existing list or need to create a new one
-          if (rawPoints.isEmpty || rawPoints.every((p) => p == null || p is DrawingPoint)) {
+          if (rawPoints.isEmpty ||
+              rawPoints.every((p) => p == null || p is DrawingPoint)) {
             // Safe to cast if empty or all elements are DrawingPoint or null
             points = List<DrawingPoint?>.from(rawPoints);
           } else {
             // If the list contains incompatible elements, create a new empty list
-            debugPrint('Layer payload contains incompatible elements in update. Creating new drawing points list.');
+            debugPrint(
+                'Layer payload contains incompatible elements in update. Creating new drawing points list.');
             points = <DrawingPoint?>[];
             // No need to save state for initialization
-            _layerManager.setPayload(_layerManager.currentLayerIndex, points, saveState: false);
+            _layerManager.setPayload(_layerManager.currentLayerIndex, points,
+                saveState: false);
           }
         } else {
           // If it's not a list at all, create a new empty list
-          debugPrint('Layer payload is not a List in update. Creating new drawing points list.');
+          debugPrint(
+              'Layer payload is not a List in update. Creating new drawing points list.');
           points = <DrawingPoint?>[];
           // No need to save state for initialization
-          _layerManager.setPayload(_layerManager.currentLayerIndex, points, saveState: false);
+          _layerManager.setPayload(_layerManager.currentLayerIndex, points,
+              saveState: false);
         }
 
         if (_brushType == BrushType.smartEraser) {
           debugPrint(
-              'Eraser mode update: removing points within tolerance $_strokeWidth');
-          points.removeWhere((p) =>
-              p != null &&
-              !p.isEraser &&
-              (p.point - adjustedPosition).distance <= _strokeWidth);
+              'Eraser mode update: finding and splitting strokes at $adjustedPosition');
+          // Create a new list to hold the modified points
+          List<DrawingPoint?> newPoints = [];
+          bool foundIntersection = false;
+
+          // Process existing points to find intersections with the eraser
+          for (int i = 0; i < points.length; i++) {
+            // Add null points (stroke separators) as is
+            if (points[i] == null) {
+              newPoints.add(null);
+              continue;
+            }
+
+            // For non-null points, check if they're close to the eraser position
+            if (!points[i]!.isEraser &&
+                (points[i]!.point - adjustedPosition).distance <=
+                    _strokeWidth / 2) {
+              // Found a point to erase - add a stroke separator
+              newPoints.add(null);
+              foundIntersection = true;
+            } else {
+              // Keep the point
+              newPoints.add(points[i]);
+            }
+          }
+
+          // If we found an intersection, update the points
+          if (foundIntersection) {
+            points = newPoints;
+          }
         } else {
           debugPrint('Drawing mode update: adding point at $adjustedPosition');
           points.add(
@@ -1503,7 +1701,8 @@ class _ProCanvasScreenState extends State<ProCanvasScreen> {
           );
         }
         // Don't save state for each update - we'll save only at the start and end of strokes
-        _layerManager.setPayload(_layerManager.currentLayerIndex, points, saveState: false);
+        _layerManager.setPayload(_layerManager.currentLayerIndex, points,
+            saveState: false);
         _lastFocalPoint = details.focalPoint;
       });
     } else {
@@ -1521,7 +1720,7 @@ class _ProCanvasScreenState extends State<ProCanvasScreen> {
       }
 
       final currentLayer = _layerManager.currentLayer;
-      
+
       if (currentLayer.contentType == ContentType.drawing) {
         // Add null to signal end of stroke
         if (currentLayer.payload != null) {
@@ -1530,28 +1729,45 @@ class _ProCanvasScreenState extends State<ProCanvasScreen> {
           if (currentLayer.payload is List) {
             // If it's already a list, convert it properly
             var rawPoints = currentLayer.payload as List;
-            
+
             // Check if we can use the existing list or need to create a new one
-            if (rawPoints.isEmpty || rawPoints.every((p) => p == null || p is DrawingPoint)) {
+            if (rawPoints.isEmpty ||
+                rawPoints.every((p) => p == null || p is DrawingPoint)) {
               // Safe to cast if empty or all elements are DrawingPoint or null
               points = List<DrawingPoint?>.from(rawPoints);
             } else {
               // If the list contains incompatible elements, create a new empty list
-              debugPrint('Layer payload contains incompatible elements in end. Creating new drawing points list.');
+              debugPrint(
+                  'Layer payload contains incompatible elements in end. Creating new drawing points list.');
               points = <DrawingPoint?>[];
             }
           } else {
             // If it's not a list at all, create a new empty list
-            debugPrint('Layer payload is not a List in end. Creating new drawing points list.');
+            debugPrint(
+                'Layer payload is not a List in end. Creating new drawing points list.');
             points = <DrawingPoint?>[];
           }
-          
+
           // Add null to mark the end of a stroke
           points.add(null);
-          
+
           // This is the end of a stroke - save the current state for proper undo
           // and then update the payload
-          _layerManager.setPayload(_layerManager.currentLayerIndex, points, saveState: true);
+          _layerManager.setPayload(_layerManager.currentLayerIndex, points,
+              saveState: true);
+        }
+      }
+      if (_toolMode == ToolMode.draw) {
+        // Only end segment if drawing mode and not panning
+        if (!_isPanning && _canvasOffset == Offset.zero && _layerManager.currentLayerIndex >= 0) {
+          setState(() {
+            // Add a null point to mark end of stroke
+            final points = _layerManager.currentLayer.payload as List<dynamic>;
+            points.add(null);
+            _layerManager.setPayload(_layerManager.currentLayerIndex, points);
+          });
+          // This drawing operation has completed, save the project
+          _autoSaveProject();
         }
       }
     });
@@ -1862,7 +2078,13 @@ class MultiLayerPainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) {
     if (oldDelegate is MultiLayerPainter) {
-      return layers != oldDelegate.layers || zoomLevel != oldDelegate.zoomLevel || offset != oldDelegate.offset || backgroundColor != oldDelegate.backgroundColor || isTransparent != oldDelegate.isTransparent || checkerPatternOpacity != oldDelegate.checkerPatternOpacity || checkerSquareSize != oldDelegate.checkerSquareSize;
+      return layers != oldDelegate.layers ||
+          zoomLevel != oldDelegate.zoomLevel ||
+          offset != oldDelegate.offset ||
+          backgroundColor != oldDelegate.backgroundColor ||
+          isTransparent != oldDelegate.isTransparent ||
+          checkerPatternOpacity != oldDelegate.checkerPatternOpacity ||
+          checkerSquareSize != oldDelegate.checkerSquareSize;
     }
     return true;
   }
@@ -1883,16 +2105,28 @@ class MultiLayerPainter extends CustomPainter {
     }
     if (current.isNotEmpty) strokeSegments.add(current);
     debugPrint('Found ${strokeSegments.length} stroke segments');
+
+    // First pass: Draw all regular (non-eraser) strokes
     for (final segment in strokeSegments) {
       if (segment.isEmpty) continue;
+
+      // Skip eraser segments in the first pass
+      if (segment[0].isEraser) continue;
+
       debugPrint(
           'Segment has ${segment.length} points, first point paint: color=${segment[0].paint.color}, opacity=${segment[0].paint.color.opacity}');
+
       if (segment.length < 2) continue;
+
+      // Draw the stroke as individual lines to maintain the original behavior
       for (int i = 0; i < segment.length - 1; i++) {
         canvas.drawLine(
             segment[i].point, segment[i + 1].point, segment[i].paint);
       }
     }
+
+    // We no longer need a second pass for eraser strokes since we're using stroke separation
+    // instead of BlendMode.clear for erasers
   }
 }
 

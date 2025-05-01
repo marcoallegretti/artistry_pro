@@ -1,10 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'screens/pro_canvas.dart';
+import 'screens/projects_screen.dart';
+import 'services/project_service.dart';
 import 'widgets/logo_widget.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(const MyApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => ProjectService(),
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -32,7 +40,7 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Artistry Pro'),
+        title: const Text('by Marco Allegretti'),
         centerTitle: true,
       ),
       body: Center(
@@ -50,7 +58,7 @@ class HomeScreen extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             const Text(
-              'Choose your canvas experience',
+              'Start your Canvas experience',
               style: TextStyle(fontSize: 16),
             ),
             const SizedBox(height: 48),
@@ -59,15 +67,15 @@ class HomeScreen extends StatelessWidget {
               children: [
                 _buildCanvasOption(
                   context,
-                  title: 'Professional Canvas',
-                  description: 'Advanced tools and features',
-                  icon: Icons.palette,
+                  title: 'My Projects',
+                  description: 'View and manage your creations',
+                  icon: Icons.folder_open,
                   isPro: true,
                   onTap: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const ProCanvasScreen(),
+                        builder: (context) => const ProjectsScreen(),
                       ),
                     );
                   },
@@ -136,13 +144,17 @@ class HomeScreen extends StatelessWidget {
                 fontSize: 14,
                 color: isPro
                     ? Theme.of(context).colorScheme.primary.withOpacity(0.8)
-                    : Theme.of(context).colorScheme.onSurfaceVariant.withOpacity(0.8),
+                    : Theme.of(context)
+                        .colorScheme
+                        .onSurfaceVariant
+                        .withOpacity(0.8),
               ),
             ),
-            if (isPro) ...[  
+            if (isPro) ...[
               const SizedBox(height: 16),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
                   color: Theme.of(context).colorScheme.primary,
                   borderRadius: BorderRadius.circular(16),
