@@ -5,7 +5,7 @@ import '../models/project.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../services/project_service.dart';
 import '../widgets/new_project_dialog.dart';
-import 'pro_canvas.dart';
+import 'canvas_screen.dart';
 
 class ProjectsScreen extends StatefulWidget {
   const ProjectsScreen({super.key});
@@ -45,11 +45,11 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
       );
 
       if (mounted) {
-        // Navigate to ProCanvasScreen with the new project
+        // Navigate to CanvasScreen with the new project
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => ProCanvasScreen(projectId: project.id),
+            builder: (context) => CanvasScreen(projectId: project.id),
           ),
         );
       }
@@ -66,7 +66,7 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => ProCanvasScreen(projectId: project.id),
+            builder: (context) => CanvasScreen(projectId: project.id),
           ),
         );
       }

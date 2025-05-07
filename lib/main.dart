@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'screens/pro_canvas.dart';
 import 'screens/projects_screen.dart';
 import 'services/project_service.dart';
 import 'widgets/logo_widget.dart';

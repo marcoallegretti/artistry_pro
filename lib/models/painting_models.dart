@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 enum ColorMode { RGB, CMYK }
 
 /// Represents a blending mode for layers
-enum BlendMode {
+enum CustomBlendMode {
   NORMAL,
   MULTIPLY,
   SCREEN,
@@ -25,39 +25,39 @@ enum BlendMode {
 }
 
 /// Maps custom BlendMode to Flutter's built-in BlendMode
-ui.BlendMode mapBlendMode(BlendMode mode) {
+ui.BlendMode mapBlendMode(CustomBlendMode mode) {
   switch (mode) {
-    case BlendMode.NORMAL:
+    case CustomBlendMode.NORMAL:
       return ui.BlendMode.srcOver;
-    case BlendMode.MULTIPLY:
+    case CustomBlendMode.MULTIPLY:
       return ui.BlendMode.multiply;
-    case BlendMode.SCREEN:
+    case CustomBlendMode.SCREEN:
       return ui.BlendMode.screen;
-    case BlendMode.OVERLAY:
+    case CustomBlendMode.OVERLAY:
       return ui.BlendMode.overlay;
-    case BlendMode.DARKEN:
+    case CustomBlendMode.DARKEN:
       return ui.BlendMode.darken;
-    case BlendMode.LIGHTEN:
+    case CustomBlendMode.LIGHTEN:
       return ui.BlendMode.lighten;
-    case BlendMode.COLOR_DODGE:
+    case CustomBlendMode.COLOR_DODGE:
       return ui.BlendMode.colorDodge;
-    case BlendMode.COLOR_BURN:
+    case CustomBlendMode.COLOR_BURN:
       return ui.BlendMode.colorBurn;
-    case BlendMode.HARD_LIGHT:
+    case CustomBlendMode.HARD_LIGHT:
       return ui.BlendMode.hardLight;
-    case BlendMode.SOFT_LIGHT:
+    case CustomBlendMode.SOFT_LIGHT:
       return ui.BlendMode.softLight;
-    case BlendMode.DIFFERENCE:
+    case CustomBlendMode.DIFFERENCE:
       return ui.BlendMode.difference;
-    case BlendMode.EXCLUSION:
+    case CustomBlendMode.EXCLUSION:
       return ui.BlendMode.exclusion;
-    case BlendMode.HUE:
+    case CustomBlendMode.HUE:
       return ui.BlendMode.hue;
-    case BlendMode.SATURATION:
+    case CustomBlendMode.SATURATION:
       return ui.BlendMode.saturation;
-    case BlendMode.COLOR:
+    case CustomBlendMode.COLOR:
       return ui.BlendMode.color;
-    case BlendMode.LUMINOSITY:
+    case CustomBlendMode.LUMINOSITY:
       return ui.BlendMode.luminosity;
   }
 }
@@ -134,7 +134,7 @@ class Layer {
   String name;
   bool visible;
   double opacity;
-  BlendMode blendMode;
+  CustomBlendMode blendMode;
   ui.Image? image;
   bool isMask;
   String? parentLayerId;
@@ -145,7 +145,7 @@ class Layer {
     required this.name,
     this.visible = true,
     this.opacity = 1.0,
-    this.blendMode = BlendMode.NORMAL,
+    this.blendMode = CustomBlendMode.NORMAL,
     this.image,
     this.isMask = false,
     this.parentLayerId,
@@ -157,7 +157,7 @@ class Layer {
     String? name,
     bool? visible,
     double? opacity,
-    BlendMode? blendMode,
+    CustomBlendMode? blendMode,
     ui.Image? image,
     bool? isMask,
     String? parentLayerId,

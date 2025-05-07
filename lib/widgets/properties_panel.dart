@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import '../models/painting_models.dart';
+import '../models/painting_models.dart' as painting_models;
 
 /// Panel for layer properties
 class PropertiesPanel extends StatelessWidget {
-  final Layer currentLayer;
+  final painting_models.Layer currentLayer;
   final Function(double) onOpacityChanged;
-  final Function(BlendMode) onBlendModeChanged;
+  final Function(painting_models.CustomBlendMode) onBlendModeChanged;
 
   const PropertiesPanel({
     super.key,
@@ -59,15 +59,15 @@ class PropertiesPanel extends StatelessWidget {
               style: Theme.of(context).textTheme.bodyMedium,
             ),
             const SizedBox(height: 8),
-            DropdownButtonFormField<BlendMode>(
+            DropdownButtonFormField<painting_models.CustomBlendMode>(
               value: currentLayer.blendMode,
               decoration: const InputDecoration(
                 border: OutlineInputBorder(),
                 contentPadding:
                     EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               ),
-              items: BlendMode.values.map((mode) {
-                return DropdownMenuItem<BlendMode>(
+              items: painting_models.CustomBlendMode.values.map((mode) {
+                return DropdownMenuItem<painting_models.CustomBlendMode>(
                   value: mode,
                   child: Text(
                     mode.toString().split('.').last,

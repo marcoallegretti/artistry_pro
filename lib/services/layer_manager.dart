@@ -1,12 +1,11 @@
 import 'dart:math';
 import 'dart:ui' as ui;
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 
 import '../models/layer.dart';
-import '../screens/pro_canvas.dart'; // Added import for DrawingPoint type
+import '../screens/canvas_screen.dart'; // Added import for DrawingPoint type
 
 /// Centralised manager for handling canvas layers.
 ///
@@ -27,7 +26,7 @@ class LayerManager extends ChangeNotifier {
       ),
     );
   }
-  
+
   /// Factory constructor to create a LayerManager from existing layers
   /// Used when loading a saved project
   factory LayerManager.fromLayers({

@@ -33,7 +33,7 @@ class Layer {
   /// Arbitrary payload that represents the raster/vector data for this layer.
   ///
   /// For the first milestone we keep using the existing `List<DrawingPoint?>`
-  /// from `pro_canvas.dart`. We store it as `dynamic` here to avoid circular
+  /// from `canvas_screen.dart`. We store it as `dynamic` here to avoid circular
   /// imports.  The concrete widgets / engines know the exact runtime type.
   dynamic payload;
 
