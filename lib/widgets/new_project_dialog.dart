@@ -15,6 +15,8 @@ class _NewProjectDialogState extends State<NewProjectDialog> {
   // Canvas settings
   double _width = 800;
   double _height = 600;
+  final TextEditingController _widthController = TextEditingController();
+  final TextEditingController _heightController = TextEditingController();
   Color _backgroundColor = Colors.white;
   bool _isTransparent = false;
   
@@ -36,11 +38,15 @@ class _NewProjectDialogState extends State<NewProjectDialog> {
     _selectedPreset = _presetSizes[0]['name'] as String;
     _width = _presetSizes[0]['width'] as double;
     _height = _presetSizes[0]['height'] as double;
+    _widthController.text = _width.toStringAsFixed(0);
+    _heightController.text = _height.toStringAsFixed(0);
   }
   
   @override
   void dispose() {
     _titleController.dispose();
+    _widthController.dispose();
+    _heightController.dispose();
     super.dispose();
   }
   
@@ -56,6 +62,8 @@ class _NewProjectDialogState extends State<NewProjectDialog> {
       _selectedPreset = presetName;
       _width = preset['width'] as double;
       _height = preset['height'] as double;
+      _widthController.text = _width.toStringAsFixed(0);
+      _heightController.text = _height.toStringAsFixed(0);
     });
   }
   
@@ -122,12 +130,12 @@ class _NewProjectDialogState extends State<NewProjectDialog> {
                 children: [
                   Expanded(
                     child: TextFormField(
+                      controller: _widthController,
                       decoration: const InputDecoration(
                         labelText: 'Width (px)',
                         border: OutlineInputBorder(),
                       ),
                       keyboardType: TextInputType.number,
-                      initialValue: _width.toStringAsFixed(0),
                       enabled: _selectedPreset == 'custom',
                       validator: (value) {
                         if (value == null || value.isEmpty) {
@@ -154,12 +162,12 @@ class _NewProjectDialogState extends State<NewProjectDialog> {
                   const SizedBox(width: 16),
                   Expanded(
                     child: TextFormField(
+                      controller: _heightController,
                       decoration: const InputDecoration(
                         labelText: 'Height (px)',
                         border: OutlineInputBorder(),
                       ),
                       keyboardType: TextInputType.number,
-                      initialValue: _height.toStringAsFixed(0),
                       enabled: _selectedPreset == 'custom',
                       validator: (value) {
                         if (value == null || value.isEmpty) {
